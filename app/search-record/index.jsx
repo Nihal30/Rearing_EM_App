@@ -1,65 +1,55 @@
 import { View, Text, TextInput, FlatList, StyleSheet } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { FormDataContext } from "../../hooks/FormDataConextApi";
 
 const SearchRecord = () => {
-    const router = useRouter()
+  const router = useRouter();
   const [searchText, setSearchText] = useState("");
-  const [data, setData] = useState([
-    "Apple",
-    "Banana",
-    "Cherry",
-    "Date",
-    "Grape",
-    "Kiwi",
-    "Mango",
-    "Orange",
-    "Pineapple",
-    "Strawberry",
-    "Apple",
-    "Banana",
-    "Cherry",
-    "Date",
-    "Grape",
-    "Kiwi",
-    "Mango",
-    "Orange",
-    "Pineapple",
-    "Strawberry",
-  ]);
+  const { formData, setFormData } = useContext(FormDataContext);
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    setData(formData);
+  }, []);
 
   // Filtered list based on search input
-  const filteredData = data.filter((item) =>
-    item.toLowerCase().includes(searchText.toLowerCase())
-  );
+  // const filteredData = data.filter((item) =>
+  //   item.toLowerCase().includes(searchText.toLowerCase())
+  // );
+  console.log("data", data);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#4C516D" }}>
       {/* Header */}
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: '#002244',
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "#002244",
           padding: 10,
         }}
       >
         {/* Back Button */}
-        <TouchableOpacity style={{marginTop: 40,marginLeft:10 }} onPress={() => router.back()}>
+        <TouchableOpacity
+          style={{ marginTop: 40, marginLeft: 10 }}
+          onPress={() => router.back()}
+        >
           <Icon name="arrow-back" size={25} color="#ffffff" />
         </TouchableOpacity>
 
         {/* Header Text */}
         <Text
           style={{
-            color: '#ffffff',
-            fontFamily: 'outfit-medium',
+            color: "#ffffff",
+            fontFamily: "outfit-medium",
             fontSize: 20,
-            flex: 1,  
-            textAlign: 'center', 
-            marginTop: 40, 
+            flex: 1,
+            textAlign: "center",
+            marginTop: 40,
           }}
         >
           SEARCH RECORDS
@@ -85,14 +75,22 @@ const SearchRecord = () => {
 
       {/* List of Items */}
       <View style={styles.listContainer}>
-       
         <FlatList
-          data={filteredData}
+          data={data}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={styles.listItem}>
-              <Text style={styles.itemText}>{item}</Text>
-            </View>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/records",
+                  params: { formData: JSON.stringify(item) },
+                })
+              }
+            >
+              <View style={styles.listItem}>
+                <Text style={styles.itemText}>{item?.orderDetails}</Text>
+              </View>
+            </TouchableOpacity>
           )}
         />
       </View>
