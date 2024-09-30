@@ -9,7 +9,7 @@ import {
   Button,
   KeyboardAvoidingView,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -38,8 +38,8 @@ const NewRecord = () => {
   const [price, setPrice] = useState("");
   const [paid, setPaid] = useState("");
   const [lockCode, setLockCode] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(null);
+  const [showTimePicker, setShowTimePicker] = useState(null);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [isYesSelected, setIsYesSelected] = useState(false);
@@ -72,6 +72,7 @@ const NewRecord = () => {
   const [isScannerVisible, setScannerVisible] = useState(false);
   const [problemList, setProblemList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
+  const [previous, setPrevious] = useState(null);
 
   const addProblem = () => {
     if (problems.trim()) {
@@ -89,9 +90,7 @@ const NewRecord = () => {
   const [isPatternModalVisible, setIsPatternModalVisible] = useState(false);
 
   // edit the form
-  const itemData = useLocalSearchParams();
-
-  console.log("itemData", itemData?.formData);
+  const { OldFormData } = useLocalSearchParams();
 
   // const handleOpenPatternLock = () => {
   //   setIsPatternModalVisible(true);
@@ -247,9 +246,13 @@ const NewRecord = () => {
     //   deviceWarranty: deviceWarranty,
     //   profitAmount: profitAmount,
     // });
+    console.log("problemList",problemList)
     const newFormData = {
       orderDetails: value,
-      customerModel: customerModel,
+      customerDetails: {
+        customerList: customerList,
+        AllCustomerDetails: customerDetails,
+      },
       problems: problemList,
       price: price,
       paid: paid,
@@ -260,6 +263,7 @@ const NewRecord = () => {
       isYesSelected: isYesSelected,
       deviceWarranty: deviceWarranty,
       profitAmount: profitAmount,
+      additionalDetails:additionalDetails
     };
 
     await setFormData((prevFormData) => [...prevFormData, newFormData]);
@@ -304,6 +308,38 @@ const NewRecord = () => {
     router.push("/");
     // console.log(formData);
   };
+
+  useEffect(() => {
+    if (OldFormData !== undefined) {
+      if (typeof OldFormData === "string") {
+        try {
+          // Parse the JSON string
+          const previousFormData = JSON.parse(OldFormData);
+          console.log("previousFormData", previousFormData); // Use the parsed data
+          // setPrevious(previousFormData);
+          if (previousFormData) {
+            setValue(previousFormData?.orderDetails);
+            setCustomerList(previousFormData?.AllCustomerDetails);
+            setCustomerDetails(previousFormData?.customerDetails);
+            setProblemList(previousFormData?.problems)
+            setPrice(previousFormData?.price)
+            setPaid(previousFormData?.paid)
+            setDate(previousFormData?.date)
+            setTime(previousFormData?.time)
+            setAdditionalDetails(previousFormData?.additionalDetails)
+            setDeviceWarranty(previousFormData?.deviceWarranty)
+            setProfitAmount(previousFormData?.profitAmount)
+            setBarcode(previousFormData?.barcode)
+          }
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+      } else {
+        console.error("OldFormData is not a valid string:", OldFormData);
+      }
+    }
+    console.log("OldFormData", OldFormData);
+  }, [OldFormData]);
 
   const onSelectModel = async (item) => {
     await setCustomerList((prevDetails) => {
@@ -395,11 +431,14 @@ const NewRecord = () => {
               >
                 <View>
                   <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
-                    Name : {item.name}/{item.phone}
+                    Name : {item.name}
                   </Text>
-                  <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
-                    Phone : {item.phone}
-                  </Text>
+                  {item.phone && (
+                    <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
+                      Phone : {item.phone}
+                    </Text>
+                  )}
+
                   {item.address && (
                     <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
                       address :{item.address}
@@ -430,7 +469,7 @@ const NewRecord = () => {
             <TextInput
               editable={false}
               value={customerModel}
-              onChangeText={setCustomerModel}
+              // onChangeText={setCustomerModel}
               style={styles.input}
               placeholder="Enter customer model"
             />
@@ -581,7 +620,7 @@ const NewRecord = () => {
             }}
           >
             <Text style={{ fontFamily: "outfit-medium" }}>
-              Date: {time ? moment(time).format("HH:mm") : ""}
+              Date: {date ? moment(date).format("DD MMM YYYY") : ""}
             </Text>
             <TouchableOpacity
               style={{
@@ -589,7 +628,7 @@ const NewRecord = () => {
                 padding: 2,
                 borderRadius: 30,
               }}
-              onPress={() => setTime(new Date())}
+              onPress={() => setDate(new Date())}
             >
               {/* <MaterialIcons name="close" size={24} color="red" /> */}
             </TouchableOpacity>

@@ -20,7 +20,7 @@ const SearchRecord = () => {
   // const filteredData = data.filter((item) =>
   //   item.toLowerCase().includes(searchText.toLowerCase())
   // );
-  console.log("data", data);
+  // console.log("data", data);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -83,7 +83,7 @@ const SearchRecord = () => {
               onPress={() =>
                 router.push({
                   pathname: "/records",
-                  params: { formData: JSON.stringify(item) },
+                  params: { OldFormData: JSON.stringify(item)},
                 })
               }
             >
