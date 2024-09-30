@@ -14,6 +14,8 @@ const SelectModelDialog = ({
   onClose,
   onSelectModel,
   customerDetails,
+  setCustomerList,
+  customerList
 }) => {
   console.log(customerDetails, "nvhg");
 
@@ -131,7 +133,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 20,
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

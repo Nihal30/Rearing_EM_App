@@ -6,6 +6,8 @@ import {
   StyleSheet,
   ScrollView,
   Linking,
+  Button,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -26,7 +28,8 @@ import { RadioButton } from "react-native-paper";
 import PatternLock from "../../components/PatternLock";
 import moment from "moment";
 import { FormDataContext } from "../../hooks/FormDataConextApi";
-
+import Checkbox from "expo-checkbox";
+import { MaterialIcons } from "@expo/vector-icons";
 const NewRecord = () => {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState("");
@@ -46,9 +49,10 @@ const NewRecord = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
-    { label: "Laptop", value: "Laptop" },
-    { label: "Hp", value: "Hp" },
-    { label: "My", value: "My" },
+    { label: "Pending", value: "Pending" },
+    { label: "Repaired", value: "Repaired" },
+    { label: "Delivered", value: "Delivered" },
+    { label: "Canceled", value: "Canceled" },
   ]);
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
@@ -66,14 +70,28 @@ const NewRecord = () => {
 
   const [barcode, setBarcode] = useState("");
   const [isScannerVisible, setScannerVisible] = useState(false);
+  const [problemList, setProblemList] = useState([]);
+  const [customerList, setCustomerList] = useState([]);
+
+  const addProblem = () => {
+    if (problems.trim()) {
+      setProblemList([...problemList, { text: problems, checked: false }]);
+      setProblems("");
+    }
+  };
+
+  const toggleCheckbox = (index) => {
+    const updatedList = [...problemList];
+    updatedList[index].checked = !updatedList[index].checked;
+    setProblemList(updatedList);
+  };
 
   const [isPatternModalVisible, setIsPatternModalVisible] = useState(false);
 
   // edit the form
-  const  itemData  = useLocalSearchParams();
+  const itemData = useLocalSearchParams();
 
-    console.log("itemData", itemData?.formData);
-
+  console.log("itemData", itemData?.formData);
 
   // const handleOpenPatternLock = () => {
   //   setIsPatternModalVisible(true);
@@ -149,7 +167,7 @@ const NewRecord = () => {
       //       <head>
       //         <style>
       //           body { font-family: Arial, sans-serif; }
-      //           h1 { color: #002244; }
+      //           h1 { color: #DE3163; }
       //           p { margin: 5px 0; }
       //         </style>
       //       </head>
@@ -213,7 +231,7 @@ const NewRecord = () => {
   // Form submit
   const { formData, setFormData } = useContext(FormDataContext);
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     // Console log all form data
     // console.log({
     //   orderDetails: value,
@@ -232,7 +250,7 @@ const NewRecord = () => {
     const newFormData = {
       orderDetails: value,
       customerModel: customerModel,
-      problems: problems,
+      problems: problemList,
       price: price,
       paid: paid,
       lockCode: lockCode,
@@ -244,57 +262,74 @@ const NewRecord = () => {
       profitAmount: profitAmount,
     };
 
-   await setFormData((prevFormData) => [...prevFormData, newFormData]);
+    await setFormData((prevFormData) => [...prevFormData, newFormData]);
 
-     // Reset all values to initial state
-     setOrderDetails("");
-     setCustomerModel("");
-     setProblems("");
-     setPrice("");
-     setPaid("");
-     setLockCode("");
-     setShowDatePicker(false);
-     setShowTimePicker(false);
-     setDate(new Date());
-     setTime(new Date());
-     setIsYesSelected(false);
-     setToastVisible(false);
-     setToastMessage("");
-     setToastType("success");
-     setOpen(false);
-     setValue(null);
-     setItems([
-       { label: "Laptop", value: "Laptop" },
-       { label: "Hp", value: "Hp" },
-       { label: "My", value: "My" },
-     ]);
-     setDialogVisible(false);
-     setBottomSheetVisible(false);
-     setCustomerDetails([]);
-     setKycVisible(false);
-     setDeviceWarranty("");
-     setProfitAmount("");
-     setAdditionalDetails("");
-     setOwner("");
-     setSelectedLocation("inHouse");
-     setServiceCenterName("");
-     setContactNo("");
-     setBarcode("");
-     setScannerVisible(false);
-     setIsPatternModalVisible(false);
+    // Reset all values to initial state
+    setOrderDetails("");
+    setCustomerModel("");
+    setProblems("");
+    setPrice("");
+    setPaid("");
+    setLockCode("");
+    setShowDatePicker(false);
+    setShowTimePicker(false);
+    setDate("");
+    setTime("");
+    setIsYesSelected(false);
+    setToastVisible(false);
+    setToastMessage("");
+    setToastType("success");
+    setOpen(false);
+    setValue(null);
+    setItems([
+      { label: "Laptop", value: "Laptop" },
+      { label: "Hp", value: "Hp" },
+      { label: "My", value: "My" },
+    ]);
+    setDialogVisible(false);
+    setBottomSheetVisible(false);
+    setCustomerDetails([]);
+    setKycVisible(false);
+    setDeviceWarranty("");
+    setProfitAmount("");
+    setAdditionalDetails("");
+    setOwner("");
+    setSelectedLocation("inHouse");
+    setServiceCenterName("");
+    setContactNo("");
+    setBarcode("");
+    setScannerVisible(false);
+    setIsPatternModalVisible(false);
 
-     router.push('/')
+    router.push("/");
     // console.log(formData);
   };
 
+  const onSelectModel = async (item) => {
+    await setCustomerList((prevDetails) => {
+      // Check if the item is already in the list
+      if (prevDetails.find((detail) => detail.id === item.id)) {
+        return prevDetails; // If already selected, do not add again
+      }
+      return [...prevDetails, item];
+    });
+    console.log("customerList", customerList);
+  };
+
+  const removeItem = (name, phone) => {
+    setCustomerList((prevList) =>
+      prevList.filter((item) => item.name !== name || item.phone !== phone)
+    );
+  };
+
   return (
-    <View style={{ flex: 1, backgroundColor: "#4C516D" }}>
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
       <View
         style={{
           flexDirection: "row",
           alignItems: "center",
-          backgroundColor: "#002244",
+          backgroundColor: "#DE3163",
           padding: 10,
         }}
       >
@@ -343,15 +378,44 @@ const NewRecord = () => {
           <Text style={styles.label}>Customer Details</Text>
 
           {/* Buttons for Select and Add */}
-          {customerDetails?.length > 0 &&
-            customerDetails?.map((item, index) => (
+          {customerList?.length > 0 &&
+            customerList?.map((item, index) => (
               <View
-                style={[styles.customerDetails, { margin: 10 }]}
+                style={[
+                  styles.customerDetails,
+                  {
+                    margin: 10,
+                    borderRadius: 10,
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  },
+                ]}
                 key={index}
               >
-                <Text style={{ color: "#ffffff" }}>
-                  {item.name}/{item.phone}
-                </Text>
+                <View>
+                  <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
+                    Name : {item.name}/{item.phone}
+                  </Text>
+                  <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
+                    Phone : {item.phone}
+                  </Text>
+                  {item.address && (
+                    <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
+                      address :{item.address}
+                    </Text>
+                  )}
+                </View>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "#D3D3D3",
+                    padding: 2,
+                    borderRadius: 30,
+                  }}
+                  onPress={() => removeItem(item.name, item.phone)}
+                >
+                  <MaterialIcons name="close" size={24} color="red" />
+                </TouchableOpacity>
               </View>
             ))}
           <View
@@ -364,6 +428,7 @@ const NewRecord = () => {
           >
             {/* Customer Details */}
             <TextInput
+              editable={false}
               value={customerModel}
               onChangeText={setCustomerModel}
               style={styles.input}
@@ -393,13 +458,64 @@ const NewRecord = () => {
 
         {/* Multiline Input for Problems */}
         <Text style={[styles.label, { marginTop: 10 }]}>Write Problems:</Text>
-        <TextInput
-          value={problems}
-          onChangeText={setProblems}
-          style={[styles.input, { height: 100 }]} // Adjust height for multiline
-          placeholder="Describe problems"
-          multiline
-        />
+        {problemList?.length > 0 && (
+          <ScrollView
+            style={{
+              borderWidth: 0.8,
+              margin: 2,
+              marginBottom: 5,
+              borderRadius: 10,
+            }}
+          >
+            {problemList.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  gap: 10,
+                  margin: 10,
+                  marginLeft: 12,
+                }}
+              >
+                <Checkbox
+                  value={item.checked}
+                  onValueChange={() => toggleCheckbox(index)}
+                  style={{ color: "gray" }}
+                />
+                <Text style={item.checked && styles.checkedText}>
+                  {item.text}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+        )}
+        <View style={{ flex: 1, width: "100%" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+              width: "100%",
+            }}
+          >
+            <TextInput
+              value={problems}
+              onChangeText={setProblems}
+              style={[styles.input, { width: "75%" }]}
+              placeholder="Describe problems"
+            />
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { height: 50, width: 70, borderRadius: 10 },
+              ]}
+              onPress={addProblem}
+            >
+              <Text style={styles.buttonText}>Add</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* Button for Customer KYC */}
         <TouchableOpacity
@@ -452,10 +568,31 @@ const NewRecord = () => {
         {/* Date Picker */}
         <Text style={[styles.label, { marginTop: 10 }]}>Select Date:</Text>
         {date && (
-          <View style={{ backgroundColor: "#ffffff", padding: 10, margin: 10 }}>
+          <View
+            style={{
+              backgroundColor: "#ffffff",
+              padding: 10,
+              margin: 10,
+              borderWidth: 1,
+              borderRadius: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <Text style={{ fontFamily: "outfit-medium" }}>
-              {moment(date).format("DD MM YYY")}
+              Date: {time ? moment(time).format("HH:mm") : ""}
             </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#D3D3D3",
+                padding: 2,
+                borderRadius: 30,
+              }}
+              onPress={() => setTime(new Date())}
+            >
+              {/* <MaterialIcons name="close" size={24} color="red" /> */}
+            </TouchableOpacity>
           </View>
         )}
         <TouchableOpacity
@@ -476,10 +613,31 @@ const NewRecord = () => {
         {/* Time Picker */}
         <Text style={styles.label}>Select Repair Time:</Text>
         {time && (
-          <View style={{ backgroundColor: "#ffffff", padding: 10, margin: 10 }}>
+          <View
+            style={{
+              backgroundColor: "#ffffff",
+              padding: 10,
+              margin: 10,
+              borderWidth: 1,
+              borderRadius: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <Text style={{ fontFamily: "outfit-medium" }}>
-              {moment(time).format("HH:MM")}
+              Time: {time ? moment(time).format("HH:mm") : ""}
             </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#D3D3D3",
+                padding: 2,
+                borderRadius: 30,
+              }}
+              onPress={() => setTime(new Date())}
+            >
+              {/* <MaterialIcons name="close" size={24} color="red" /> */}
+            </TouchableOpacity>
           </View>
         )}
         <TouchableOpacity
@@ -505,10 +663,12 @@ const NewRecord = () => {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              gap: 145,
+              justifyContent: "space-between",
             }}
           >
-            <Text style={[styles.label, { marginTop: 10 }]}>Power Adapter</Text>
+            <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
+              Power Adapter
+            </Text>
             <View
               style={[styles.radioGroup, { flex: 1, flexDirection: "row" }]}
             >
@@ -531,10 +691,10 @@ const NewRecord = () => {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              gap: 130,
+              justifyContent: "space-between",
             }}
           >
-            <Text style={[styles.label, { marginTop: 10 }]}>
+            <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
               Keyboard/Mouse
             </Text>
             <View
@@ -559,10 +719,12 @@ const NewRecord = () => {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              gap: 160,
+              justifyContent: "space-between",
             }}
           >
-            <Text style={[styles.label, { marginTop: 10 }]}>Other Device</Text>
+            <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
+              Other Device
+            </Text>
             <View
               style={[styles.radioGroup, { flex: 1, flexDirection: "row" }]}
             >
@@ -659,6 +821,7 @@ const NewRecord = () => {
                   ]}
                 >
                   <TouchableOpacity
+                    onPress={() => Linking.openURL(`tel:${contactNo}`)}
                     style={[
                       styles.button,
                       { height: "100%", width: 150, borderRadius: 10 },
@@ -667,6 +830,11 @@ const NewRecord = () => {
                     <Text style={styles.buttonText}>Call</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
+                    onPress={() =>
+                      Linking.openURL(
+                        `sms:${contactNo}?body=${encodeURIComponent(message)}`
+                      )
+                    }
                     style={[
                       styles.button,
                       { height: "100%", width: 150, borderRadius: 10 },
@@ -719,6 +887,7 @@ const NewRecord = () => {
       </ScrollView>
 
       {/* Footer */}
+
       <View style={styles.footer}>
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
@@ -759,6 +928,7 @@ const NewRecord = () => {
           </TouchableOpacity>
         </View>
       </View>
+
       {/* Toast component */}
       <Toast message={toastMessage} visible={toastVisible} type={toastType} />
       {/* Select Model Dialog */}
@@ -766,7 +936,9 @@ const NewRecord = () => {
         visible={isDialogVisible}
         onClose={closeDialog}
         customerDetails={customerDetails}
-        onSelectModel={(selectedModel) => setCustomerModel(selectedModel)}
+        onSelectModel={onSelectModel}
+        setCustomerList={setCustomerList}
+        customerList={customerList}
       />
       {/* Bottom Sheet Modal */}
       <BottomSheetModal
@@ -802,8 +974,8 @@ const styles = StyleSheet.create({
     // Add any additional styles for the form container
   },
   label: {
-    color: "#ffffff",
-    marginBottom: 5,
+    fontFamily: "outfit",
+    margin: 5,
   },
   input: {
     backgroundColor: "#ffffff",
@@ -818,7 +990,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -836,7 +1008,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   submitButton: {
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     padding: 15,
 
     borderRadius: 5,
@@ -859,7 +1031,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
     padding: 10,
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 5,
@@ -877,13 +1049,23 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 5,
     borderWidth: 1,
-    borderColor: "#ffffff",
+    borderColor: "#000000",
     padding: 10,
   },
   radioContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "gray",
+    padding: 10,
+    borderRadius: 10,
+  },
+  checkedText: {
+    textDecorationLine: "line-through",
+    color: "gray",
   },
 });
 

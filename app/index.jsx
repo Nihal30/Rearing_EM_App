@@ -5,11 +5,11 @@ import Hero from '../assets/images/Bg-Hero.jpg'
 export default function Index() {
   const router = useRouter()
   return (
-    <View style={{ flex: 1, backgroundColor: "#4C516D" }}>
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
       <View
         style={{
-          backgroundColor: "#002244",
+          backgroundColor: "#DE3163",
           padding: 10,
           alignItems: "center",
         }}
@@ -34,7 +34,8 @@ export default function Index() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          marginTop:-200
+          marginTop:-200,
+        
         }}
       >
          {/* Hero Image */}
@@ -49,7 +50,7 @@ export default function Index() {
           style={{
             width: 200,
             marginTop: 20,
-            backgroundColor: "#002244",
+            backgroundColor: "#DE3163",
             paddingVertical: 15,
             paddingHorizontal: 30,
             borderRadius: 10,
@@ -67,7 +68,7 @@ export default function Index() {
           style={{
             width: 200,
             marginTop: 20,
-            backgroundColor: "#002244",
+            backgroundColor: "#DE3163",
             paddingVertical: 15,
             paddingHorizontal: 30,
             borderRadius: 10,
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
   button: {
     width: 200,
     marginTop: 20,
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,

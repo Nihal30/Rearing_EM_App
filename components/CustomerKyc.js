@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   acceptButton: {
-    color: "#002244",
+    color: "#DE3163",
     fontWeight: "bold",
   },
   actionContainer: {
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   doneButton: {
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     padding: 10,
     borderRadius: 5,
     flex: 1,

@@ -198,13 +198,13 @@ const NewRecord = () => {
     router.push('/');
   };
   return (
-    <View style={{ flex: 1, backgroundColor: "#4C516D" }}>
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
       <View
         style={{
           flexDirection: "row",
           alignItems: "center",
-          backgroundColor: "#002244",
+          backgroundColor: "#DE3163",
           padding: 10,
         }}
       >
@@ -728,7 +728,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -746,7 +746,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   submitButton: {
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     padding: 15,
 
     borderRadius: 5,
@@ -769,7 +769,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
     padding: 10,
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 5,

@@ -23,13 +23,13 @@ const SearchRecord = () => {
   console.log("data", data);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#4C516D" }}>
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
       <View
         style={{
           flexDirection: "row",
           alignItems: "center",
-          backgroundColor: "#002244",
+          backgroundColor: "#DE3163",
           padding: 10,
         }}
       >
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   listItem: {
-    backgroundColor: "#002244",
+    backgroundColor: "#DE3163",
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
