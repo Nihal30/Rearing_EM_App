@@ -10,6 +10,10 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { RadioButton } from "react-native-paper";
+import Entypo from "@expo/vector-icons/Entypo";
+import Foundation from '@expo/vector-icons/Foundation';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+// import { Video } from "expo-av";
 // import Video from "react-native-video";
 
 const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
@@ -20,7 +24,11 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
 
   useEffect(() => {
     if (customerKyc) {
-      setImages(Array.isArray(customerKyc?.Images) ? customerKyc.Images : [null, null, null, null]);
+      setImages(
+        Array.isArray(customerKyc?.Images)
+          ? customerKyc.Images
+          : [null, null, null, null]
+      );
       setVideo(customerKyc?.Video || null);
       setTermsAccepted(customerKyc?.termsAccepted || false);
     }
@@ -94,36 +102,56 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
             <View style={styles.buttonContainer}>
               {/* First Row of Buttons or Image Previews */}
               <View style={styles.row}>
-                {(Array.isArray(images) ? images.slice(0, 2) : []).map((image, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.iconButton}
-                    onPress={() => handleImagePick(index)}
-                  >
-                    {image ? (
-                      <Image source={{ uri: image.uri }} style={styles.previewImage} />
-                    ) : (
-                      <Text style={styles.buttonText}>Camera {index + 1}</Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
+                {(Array.isArray(images) ? images.slice(0, 2) : []).map(
+                  (image, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.iconButton}
+                      onPress={() => handleImagePick(index)}
+                    >
+                      {image ? (
+                        <Image
+                          source={{ uri: image.uri }}
+                          style={styles.previewImage}
+                        />
+                      ) : (
+                        <View style={{ alignItems: "center" }}>
+                          <Entypo name="camera" size={50} color="#566573" />
+                          <Text style={styles.buttonText}>
+                            Id Picture {index == 1 ? "Front" : "Back"}
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  )
+                )}
               </View>
 
               {/* Second Row of Buttons or Image Previews */}
               <View style={styles.row}>
-                {(Array.isArray(images) ? images.slice(2, 4) : []).map((image, index) => (
-                  <TouchableOpacity
-                    key={index + 2}
-                    style={styles.iconButton}
-                    onPress={() => handleImagePick(index + 2)}
-                  >
-                    {image ? (
-                      <Image source={{ uri: image.uri }} style={styles.previewImage} />
-                    ) : (
-                      <Text style={styles.buttonText}>Camera {index + 3}</Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
+                {(Array.isArray(images) ? images.slice(2, 4) : []).map(
+                  (image, index) => (
+                    <TouchableOpacity
+                      key={index + 2}
+                      style={styles.iconButton}
+                      onPress={() => handleImagePick(index + 2)}
+                    >
+                      {image ? (
+                        <Image
+                          source={{ uri: image.uri }}
+                          style={styles.previewImage}
+                        />
+                      ) : (
+                        <View style={{ alignItems: "center" }}>
+                          <Entypo name="camera" size={50} color="#566573" />
+                          <Text style={styles.buttonText}>
+                            Device {index == 1 ? "Front" : "Back"}
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  )
+                )}
               </View>
 
               {/* Video Button or Preview */}
@@ -142,6 +170,7 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
                   style={styles.iconButton}
                   onPress={handleVideoPick}
                 >
+                <FontAwesome6 name="video" size={50} color="#566573" />
                   <Text style={styles.buttonText}>Record Video</Text>
                 </TouchableOpacity>
                  )}  */}
@@ -150,6 +179,7 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
                   style={styles.iconButton}
                   onPress={handleTermsOpen}
                 >
+                  <Foundation name="clipboard-notes" size={50} color="#566573" />
                   <Text style={styles.buttonText}>Note</Text>
                 </TouchableOpacity>
               </View>
@@ -225,7 +255,7 @@ const styles = StyleSheet.create({
   },
   dialogBox: {
     width: "90%",
-    height: "90%",
+    height: "60%",
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
@@ -246,15 +276,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   iconButton: {
-    width: "48%",
-    height: 50,
+    width: "45%",
+    height: 100,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
     backgroundColor: "#f0f0f0",
   },
   buttonText: {
-    fontSize: 24,
+    fontSize: 15,
   },
   actionContainer: {
     flexDirection: "row",

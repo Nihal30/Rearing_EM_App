@@ -264,15 +264,15 @@ const NewRecord = () => {
       !customerList.length ||
       !problemList.length ||
       !date ||
-      !model || 
-      !time 
-      
+      !model ||
+      !time
     ) {
       console.error(
         "Order details , customer details , model , Problem , data , time are required."
       );
-      alert("Please fill Order details , customer details , model , Problem , data , time are required."
-);
+      alert(
+        "Please fill Order details , customer details , model , Problem , data , time are required."
+      );
       return; // Exit the function if validation fails
     }
 
@@ -290,7 +290,7 @@ const NewRecord = () => {
       barcode: barcode,
       date: date,
       time: time,
-      owner:owner,
+      owner: owner,
       isYesSelected: isYesSelected,
       deviceWarranty: deviceWarranty, // Optional
       profitAmount: profitAmount,
@@ -398,7 +398,7 @@ const NewRecord = () => {
             setPaid(previousFormData?.paid);
             setDate(previousFormData?.date);
             setTime(previousFormData?.time);
-            setOwner(previousFormData?.owner)
+            setOwner(previousFormData?.owner);
             setAdditionalDetails(previousFormData?.additionalDetails);
             setDeviceWarranty(previousFormData?.deviceWarranty);
             setProfitAmount(previousFormData?.profitAmount);
@@ -452,6 +452,12 @@ const NewRecord = () => {
   const removeItem = (name, phone) => {
     setCustomerList((prevList) =>
       prevList.filter((item) => item.name !== name || item.phone !== phone)
+    );
+  };
+
+  const removeProblemsItem = (indexToRemove) => {
+    setProblemList((prevList) =>
+      prevList.filter((item, index) => index !== indexToRemove)
     );
   };
 
@@ -621,16 +627,39 @@ const NewRecord = () => {
                   gap: 10,
                   margin: 10,
                   marginLeft: 12,
+                  alignItems: "center",
                 }}
               >
-                <Checkbox
-                  value={item.checked}
-                  onValueChange={() => toggleCheckbox(index)}
-                  style={{ color: "gray" }}
-                />
-                <Text style={item.checked && styles.checkedText}>
-                  {item.text}
-                </Text>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    gap: 10,
+                    margin: 10,
+                    marginLeft: 12,
+                    alignItems: "center",
+                  }}
+                >
+                  <Checkbox
+                    value={item.checked}
+                    onValueChange={() => toggleCheckbox(index)}
+                    style={{ color: "gray" }}
+                  />
+                  <Text style={item.checked && styles.checkedText}>
+                    {item.text}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "#D3D3D3",
+                    padding: 1,
+                    borderRadius: 30,
+                  }}
+                  onPress={() => removeProblemsItem(index)}
+                >
+                  <MaterialIcons name="close" size={20} color="red" />
+                </TouchableOpacity>
               </View>
             ))}
           </ScrollView>
@@ -904,7 +933,7 @@ const NewRecord = () => {
             style={[styles.input, { flex: 1 }]}
             placeholder="Enter or scan barcode"
           />
-          {/* <TouchableOpacity
+          <TouchableOpacity
             onPress={() => setScannerVisible(true)}
             style={[
               styles.button,
@@ -912,7 +941,7 @@ const NewRecord = () => {
             ]}
           >
             <Text style={styles.buttonText}>Scan</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
 
         {/* Owner/Assistant */}

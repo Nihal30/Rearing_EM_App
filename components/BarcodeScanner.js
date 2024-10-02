@@ -29,15 +29,12 @@ const BarcodeScanner = ({ onScan, onClose }) => {
   return (
     <View style={styles.container}>
       {scanning ? (
-        <BarCodeScanner
-          onBarCodeScanned={handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
-        >
-          {/* <View style={styles.overlay}>
-            <Text style={styles.scanningText}>Scanning...</Text>
-            <Button title="Stop Scanning" onPress={() => setScanning(false)} />
-          </View> */}
-        </BarCodeScanner>
+        <View style={styles.scannerWrapper}>
+          <BarCodeScanner
+            onBarCodeScanned={handleBarCodeScanned}
+            style={StyleSheet.absoluteFillObject}
+          />
+        </View>
       ) : (
         <View style={styles.scannerButtonContainer}>
           <Button title="Start Scanning" onPress={() => setScanning(true)} />
@@ -55,23 +52,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000', // Ensures the background fills the whole screen
   },
-  overlay: {
+  scannerWrapper: {
     flex: 1,
+    width: '100%', // Ensures the scanner takes the full width
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  scanningText: {
-    fontSize: 18,
-    color: '#fff',
   },
   scannerButtonContainer: {
     margin: 20,
   },
   closeButton: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 40,
     right: 20,
     backgroundColor: '#FF3B30', // Red background color for the button
     padding: 10,
