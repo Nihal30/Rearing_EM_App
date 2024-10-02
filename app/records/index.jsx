@@ -73,6 +73,7 @@ const NewRecord = () => {
   const [problemList, setProblemList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
   const [previous, setPrevious] = useState(null);
+  const [customerKyc, setCustomerKyc] = useState({});
 
   const addProblem = () => {
     if (problems.trim()) {
@@ -231,23 +232,30 @@ const NewRecord = () => {
   const { formData, setFormData } = useContext(FormDataContext);
 
   const handleSubmit = async () => {
-    // Console log all form data
-    // console.log({
-    //   orderDetails: value,
-    //   customerModel: customerModel,
-    //   problems: problems,
-    //   price: price,
-    //   paid: paid,
-    //   lockCode: lockCode,
-    //   barcode: barcode,
-    //   date: date,
-    //   time: time,
-    //   isYesSelected: isYesSelected,
-    //   deviceWarranty: deviceWarranty,
-    //   profitAmount: profitAmount,
-    // });
-    console.log("problemList",problemList)
-    const newFormData = {
+    // Validation: Check for required fields
+    // if (
+    //   !value ||
+    //   !customerList.length ||
+    //   !problemList.length ||
+    //   !price ||
+    //   !paid ||
+    //   !lockCode ||
+    //   !barcode ||
+    //   !date ||
+    //   !time ||
+    //   !isYesSelected ||
+    //   !profitAmount ||
+    //   !customerKyc
+    // ) {
+    //   console.error(
+    //     "All fields except additionalDetails and deviceWarranty are required."
+    //   );
+    //   // You can also set an error state here to display a user-friendly error message
+    //   alert("Please fill in all required fields.");
+    //   return; // Exit the function if validation fails
+    // }
+
+    let newFormData = {
       orderDetails: value,
       customerDetails: {
         customerList: customerList,
@@ -261,10 +269,18 @@ const NewRecord = () => {
       date: date,
       time: time,
       isYesSelected: isYesSelected,
-      deviceWarranty: deviceWarranty,
+      deviceWarranty: deviceWarranty, // Optional
       profitAmount: profitAmount,
-      additionalDetails:additionalDetails
+      additionalDetails: additionalDetails, // Optional
+      customerKyc: customerKyc,
+      selectedLocation: selectedLocation, // Include selectedLocation here
     };
+
+    // Add service center details only if selectedLocation is "serviceCenter"
+    if (selectedLocation === "serviceCenter") {
+      newFormData.serviceCenterName = serviceCenterName;
+      newFormData.contactNo = contactNo;
+    }
 
     await setFormData((prevFormData) => [...prevFormData, newFormData]);
 
@@ -315,21 +331,37 @@ const NewRecord = () => {
         try {
           // Parse the JSON string
           const previousFormData = JSON.parse(OldFormData);
-          console.log("previousFormData", previousFormData); // Use the parsed data
-          // setPrevious(previousFormData);
+          console.log("previousFormData", previousFormData);
+
           if (previousFormData) {
             setValue(previousFormData?.orderDetails);
-            setCustomerList(previousFormData?.AllCustomerDetails);
-            setCustomerDetails(previousFormData?.customerDetails);
-            setProblemList(previousFormData?.problems)
-            setPrice(previousFormData?.price)
-            setPaid(previousFormData?.paid)
-            setDate(previousFormData?.date)
-            setTime(previousFormData?.time)
-            setAdditionalDetails(previousFormData?.additionalDetails)
-            setDeviceWarranty(previousFormData?.deviceWarranty)
-            setProfitAmount(previousFormData?.profitAmount)
-            setBarcode(previousFormData?.barcode)
+            setCustomerList(previousFormData?.customerDetails?.customerList);
+            setCustomerDetails(
+              previousFormData?.customerDetails?.AllCustomerDetails
+            );
+            setProblemList(previousFormData?.problems);
+            setPrice(previousFormData?.price);
+            setPaid(previousFormData?.paid);
+            setDate(previousFormData?.date);
+            setTime(previousFormData?.time);
+            setAdditionalDetails(previousFormData?.additionalDetails);
+            setDeviceWarranty(previousFormData?.deviceWarranty);
+            setProfitAmount(previousFormData?.profitAmount);
+            setBarcode(previousFormData?.barcode);
+            setCustomerKyc(previousFormData?.customerKyc);
+            setSelectedLocation(previousFormData.selectedLocation);
+
+            // Check the selected location
+            const location = previousFormData.selectedLocation; // Get selectedLocation
+            if (location === "serviceCenter") {
+              // Set contact number correctly
+              setContactNo(previousFormData?.contactNo || "");
+              setServiceCenterName(previousFormData?.serviceCenterName || "");
+            } else if (location === "inHouse") {
+              // Optionally clear service center details if inHouse is selected
+              setContactNo("");
+              setServiceCenterName("");
+            }
           }
         } catch (error) {
           console.error("Error parsing JSON:", error);
@@ -792,7 +824,7 @@ const NewRecord = () => {
             style={[styles.input, { flex: 1 }]}
             placeholder="Enter or scan barcode"
           />
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => setScannerVisible(true)}
             style={[
               styles.button,
@@ -800,7 +832,7 @@ const NewRecord = () => {
             ]}
           >
             <Text style={styles.buttonText}>Scan</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Owner/Assistant */}
@@ -988,7 +1020,12 @@ const NewRecord = () => {
         setCustomerDetails={setCustomerDetails}
       />
 
-      <CustomerKyc visible={kycVisible} onClose={() => setKycVisible(false)} />
+      <CustomerKyc
+        visible={kycVisible}
+        onClose={() => setKycVisible(false)}
+        customerKyc={customerKyc}
+        setCustomerKyc={setCustomerKyc}
+      />
 
       {isScannerVisible && (
         <BarcodeScanner

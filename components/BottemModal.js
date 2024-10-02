@@ -1,5 +1,3 @@
-// components/BottomSheetModal.js
-
 import React, { useState } from "react";
 import {
   View,
@@ -8,9 +6,15 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 
-const BottomSheetModal = ({ visible, onClose, headerText, setCustomerDetails }) => {
+const BottomSheetModal = ({
+  visible,
+  onClose,
+  headerText,
+  setCustomerDetails,
+}) => {
   // State for customer details
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -18,13 +22,24 @@ const BottomSheetModal = ({ visible, onClose, headerText, setCustomerDetails }) 
 
   // Handler for the "Add" button
   const handleAddDetails = () => {
+    if (customerName.trim() === "" || customerPhone.trim() === "") {
+      Alert.alert("Error", "Name and Phone Number are required fields.");
+      return;
+    }
+
     const newCustomer = {
       name: customerName,
       phone: customerPhone,
       address: customerAddress,
     };
-    
+
     setCustomerDetails((prevDetails) => [...prevDetails, newCustomer]);
+    
+    // Reset input fields
+    setCustomerName("");
+    setCustomerPhone("");
+    setCustomerAddress("");
+
     onClose(); // Close the modal after adding
   };
 
