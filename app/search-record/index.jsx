@@ -1,10 +1,17 @@
-import { View, Text, TextInput, FlatList, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  StyleSheet,
+  Image,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { FormDataContext } from "../../hooks/FormDataConextApi";
-import NoData from '../../assets/images/noData.jpg';
+import NoData from "../../assets/images/noData.jpg";
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -24,16 +31,26 @@ const SearchRecord = () => {
     const filtered = selectedStatus
       ? data.filter((item) => {
           const matchesSearchText =
-            item.orderDetails.toLowerCase().includes(searchText.toLowerCase()) ||
-            (item.customerDetails?.customerList[0]?.name.toLowerCase().includes(searchText.toLowerCase()) || false);
-          
+            item.orderDetails
+              .toLowerCase()
+              .includes(searchText.toLowerCase()) ||
+            item.customerDetails?.customerList[0]?.name
+              .toLowerCase()
+              .includes(searchText.toLowerCase()) ||
+            false;
+
           return matchesSearchText && item.orderDetails === selectedStatus;
         })
       : data.filter((item) => {
           const matchesSearchText =
-            item.orderDetails.toLowerCase().includes(searchText.toLowerCase()) ||
-            (item.customerDetails?.customerList[0]?.name.toLowerCase().includes(searchText.toLowerCase()) || false);
-          
+            item.orderDetails
+              .toLowerCase()
+              .includes(searchText.toLowerCase()) ||
+            item.customerDetails?.customerList[0]?.name
+              .toLowerCase()
+              .includes(searchText.toLowerCase()) ||
+            false;
+
           return matchesSearchText;
         });
 
@@ -59,18 +76,42 @@ const SearchRecord = () => {
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
-      <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#DE3163", padding: 10 }}>
-        <TouchableOpacity style={{ marginTop: 40, marginLeft: 10 }} onPress={() => router.back()}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "#DE3163",
+          padding: 10,
+        }}
+      >
+        <TouchableOpacity
+          style={{ marginTop: 40, marginLeft: 10 }}
+          onPress={() => router.back()}
+        >
           <Icon name="arrow-back" size={25} color="#ffffff" />
         </TouchableOpacity>
-        <Text style={{ color: "#ffffff", fontFamily: "outfit-medium", fontSize: 20, flex: 1, textAlign: "center", marginTop: 40 }}>
+        <Text
+          style={{
+            color: "#ffffff",
+            fontFamily: "outfit-medium",
+            fontSize: 20,
+            flex: 1,
+            textAlign: "center",
+            marginTop: 40,
+          }}
+        >
           SEARCH RECORDS
         </Text>
       </View>
 
       {/* Search Input with Icon */}
       <View style={styles.searchContainer}>
-        <Icon name="search" size={20} color="#cccccc" style={styles.searchIcon} />
+        <Icon
+          name="search"
+          size={20}
+          color="#cccccc"
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.input}
           placeholder="Search Customer Name."
@@ -123,22 +164,32 @@ const SearchRecord = () => {
                 <View style={styles.listItem}>
                   <View style={styles.titleValueContainer}>
                     <Text style={styles.titleText}>Order Status:</Text>
-                    <Text style={[styles.valueText, getOrderStatusStyle(item?.orderDetails)]}>
+                    <Text
+                      style={[
+                        styles.valueText,
+                        getOrderStatusStyle(item?.orderDetails),
+                      ]}
+                    >
                       {item?.orderDetails}
                     </Text>
                   </View>
                   {item?.customerDetails?.customerList?.length > 0 && (
-                    <View style={styles.titleValueContainer}>
-                      <Text style={styles.titleText}>Customer Name:</Text>
-                      <Text style={styles.valueText}>
-                        {item.customerDetails.customerList[0]?.name || "N/A"}
-                      </Text>
+                    <View>
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.titleText}>Customer Name:</Text>
+                        <Text style={styles.valueText}>
+                          {item.customerDetails.customerList[0]?.name || "N/A"}
+                        </Text>
+                      </View>
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.titleText}>Customer Phone:</Text>
+                        <Text style={styles.valueText}>
+                          {item.customerDetails.customerList[0]?.phone || "N/A"}
+                        </Text>
+                      </View>
                     </View>
                   )}
-                  <View style={styles.titleValueContainer}>
-                    <Text style={styles.titleText}>Customer Phone:</Text>
-                    <Text style={styles.valueText}>{item.contactNo || "N/A"}</Text>
-                  </View>
+
                   <View style={styles.titleValueContainer}>
                     <Text style={styles.titleText}>Model:</Text>
                     <Text style={styles.valueText}>{item?.model}</Text>
@@ -158,11 +209,15 @@ const SearchRecord = () => {
                   )}
                   <View style={styles.titleValueContainer}>
                     <Text style={styles.titleText}>Date:</Text>
-                    <Text style={styles.valueText}>{new Date(item.date).toLocaleDateString() || "N/A"}</Text>
+                    <Text style={styles.valueText}>
+                      {new Date(item.date).toLocaleDateString() || "N/A"}
+                    </Text>
                   </View>
                   <View style={styles.titleValueContainer}>
                     <Text style={styles.titleText}>Time:</Text>
-                    <Text style={styles.valueText}>{new Date(item.time).toLocaleTimeString() || "N/A"}</Text>
+                    <Text style={styles.valueText}>
+                      {new Date(item.time).toLocaleTimeString() || "N/A"}
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -271,8 +326,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF4500", // OrangeRed color for canceled
   },
   noDataContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 100,
   },
   noDataImage: {
@@ -282,7 +337,7 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     fontSize: 18,
-    color: '#666666',
+    color: "#666666",
   },
 });
 
