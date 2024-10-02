@@ -78,6 +78,7 @@ const NewRecord = () => {
   const [isPowerSelected, setIsPowerSelected] = useState(false); // For Power Adapter
   const [isKeyboardSelected, setIsKeyboardSelected] = useState(false); // For Keyboard/Mouse
   const [isOtherDeviceSelected, setIsOtherDeviceSelected] = useState(false); // For Other Device
+  const [model, setModel] = useState("");
 
   const handlePowerSelection = () => {
     setPowerSelected((prev) => !prev);
@@ -258,26 +259,22 @@ const NewRecord = () => {
 
   const handleSubmit = async () => {
     // Validation: Check for required fields
-    // if (
-    //   !value ||
-    //   !customerList.length ||
-    //   !problemList.length ||
-    //   !price ||
-    //   !paid ||
-    //   !lockCode ||
-    //   !barcode ||
-    //   !date ||
-    //   !time ||
-    //   !isYesSelected ||
-    //   !profitAmount ||
-    //   !customerKyc
-    // ) {
-    //   console.error(
-    //     "All fields except additionalDetails and deviceWarranty are required."
-    //   );
-    //   alert("Please fill in all required fields.");
-    //   return; // Exit the function if validation fails
-    // }
+    if (
+      !value ||
+      !customerList.length ||
+      !problemList.length ||
+      !date ||
+      !model || 
+      !time 
+      
+    ) {
+      console.error(
+        "Order details , customer details , model , Problem , data , time are required."
+      );
+      alert("Please fill Order details , customer details , model , Problem , data , time are required."
+);
+      return; // Exit the function if validation fails
+    }
 
     const newFormData = {
       id: formDataId || generateCustomId(), // Use existing ID if available, otherwise generate a new one
@@ -298,6 +295,7 @@ const NewRecord = () => {
       profitAmount: profitAmount,
       additionalDetails: additionalDetails, // Optional
       customerKyc: customerKyc,
+      model: model,
       selectedLocation: selectedLocation,
       accessories: {
         isPowerSelected: isPowerSelected,
@@ -336,7 +334,7 @@ const NewRecord = () => {
       return [...prevFormData, newFormData];
     });
     router.push("/");
-    resetForm()
+    resetForm();
   };
 
   // Function to reset all form values
@@ -358,6 +356,7 @@ const NewRecord = () => {
     setToastType("success");
     setOpen(false);
     setValue(null);
+    setModel("");
     setItems([
       { label: "Laptop", value: "Laptop" },
       { label: "Hp", value: "Hp" },
@@ -403,6 +402,7 @@ const NewRecord = () => {
             setProfitAmount(previousFormData?.profitAmount);
             setBarcode(previousFormData?.barcode);
             setCustomerKyc(previousFormData?.customerKyc);
+            setModel(previousFormData?.model);
 
             // Set accessory selections if available
             setIsPowerSelected(previousFormData?.accessories?.isPowerSelected);
@@ -589,6 +589,15 @@ const NewRecord = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <Text style={[styles.label, { marginTop: 10 }]}>Model</Text>
+
+        <TextInput
+          value={model}
+          onChangeText={setModel}
+          style={[styles.input, { height: 50, marginTop: 2 }]} // Adjust height for multiline
+          placeholder="Model"
+          multiline
+        />
 
         {/* Multiline Input for Problems */}
         <Text style={[styles.label, { marginTop: 10 }]}>Write Problems:</Text>
