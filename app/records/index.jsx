@@ -8,6 +8,7 @@ import {
   Linking,
   Button,
   KeyboardAvoidingView,
+  Keyboard,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -460,6 +461,27 @@ const NewRecord = () => {
       prevList.filter((item, index) => index !== indexToRemove)
     );
   };
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    // Clean up listeners on unmount
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -1067,47 +1089,48 @@ const NewRecord = () => {
       </ScrollView>
 
       {/* Footer */}
+      {!isKeyboardVisible && (
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitButtonText}>Submit</Text>
+          </TouchableOpacity>
 
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit</Text>
-        </TouchableOpacity>
-
-        <View style={styles.horizontalButtons}>
-          <TouchableOpacity
-            style={styles.horizontalButton}
-            onPress={handleCall}
-          >
-            <Text style={styles.buttonText}>
-              <Icon name="call" size={25} color="#ffffff" />
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.horizontalButton}
-            onPress={handleMessage}
-          >
-            <Text style={styles.buttonText}>
-              <Icon name="chatbox-ellipses" size={25} color="#ffffff" />
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.horizontalButton}
-            onPress={handleWhatsApp}
-          >
-            <Text style={styles.buttonText}>
-              <Icon name="logo-whatsapp" size={25} color="#ffffff" />
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.horizontalButton}
-            onPress={handlePrint}
-          >
-            <Text style={styles.buttonText}>
-              <Icon name="print" size={25} color="#ffffff" />
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.horizontalButtons}>
+            <TouchableOpacity
+              style={styles.horizontalButton}
+              onPress={handleCall}
+            >
+              <Text style={styles.buttonText}>
+                <Icon name="call" size={25} color="#ffffff" />
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.horizontalButton}
+              onPress={handleMessage}
+            >
+              <Text style={styles.buttonText}>
+                <Icon name="chatbox-ellipses" size={25} color="#ffffff" />
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.horizontalButton}
+              onPress={handleWhatsApp}
+            >
+              <Text style={styles.buttonText}>
+                <Icon name="logo-whatsapp" size={25} color="#ffffff" />
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.horizontalButton}
+              onPress={handlePrint}
+            >
+              <Text style={styles.buttonText}>
+                <Icon name="print" size={25} color="#ffffff" />
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
 
       {/* Toast component */}
       <Toast message={toastMessage} visible={toastVisible} type={toastType} />
@@ -1153,6 +1176,10 @@ const NewRecord = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    // flex: 1,
+    display: "none",
+  },
   formContainer: {
     flex: 1,
     padding: 10,
