@@ -290,6 +290,7 @@ const NewRecord = () => {
       barcode: barcode,
       date: date,
       time: time,
+      owner:owner,
       isYesSelected: isYesSelected,
       deviceWarranty: deviceWarranty, // Optional
       profitAmount: profitAmount,
@@ -397,6 +398,7 @@ const NewRecord = () => {
             setPaid(previousFormData?.paid);
             setDate(previousFormData?.date);
             setTime(previousFormData?.time);
+            setOwner(previousFormData?.owner)
             setAdditionalDetails(previousFormData?.additionalDetails);
             setDeviceWarranty(previousFormData?.deviceWarranty);
             setProfitAmount(previousFormData?.profitAmount);
