@@ -17,7 +17,7 @@ const SelectModelDialog = ({
   setCustomerList,
   customerList
 }) => {
-  console.log(customerDetails, "nvhg");
+  // console.log(customerDetails, "nvhg");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -29,7 +29,7 @@ const SelectModelDialog = ({
 
   // Update search results whenever customerDetails or searchQuery changes
   useEffect(() => {
-    if (customerDetails.length > 0) {
+    if (customerList.length > 0) {
       setSearchResults(customerDetails);
     }
   }, [customerDetails]);
@@ -38,7 +38,7 @@ const SelectModelDialog = ({
     setSearchQuery(query);
     if (query) {
       // Filter the search results based on query
-      const filteredResults = customerDetails.filter((item) =>
+      const filteredResults = customerList.filter((item) =>
         item.name.toLowerCase().includes(query.toLowerCase())
       );
       setSearchResults(filteredResults);
@@ -65,7 +65,7 @@ const SelectModelDialog = ({
             value={searchQuery}
             onChangeText={handleSearch}
             style={styles.searchInput}
-            placeholder="Search model..."
+            placeholder="Search Customer."
           />
 
           {/* Search Results */}
