@@ -336,6 +336,7 @@ const NewRecord = () => {
       return [...prevFormData, newFormData];
     });
     router.push("/");
+    resetForm()
   };
 
   // Function to reset all form values
