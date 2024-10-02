@@ -30,6 +30,7 @@ import moment from "moment";
 import { FormDataContext } from "../../hooks/FormDataConextApi";
 import Checkbox from "expo-checkbox";
 import { MaterialIcons } from "@expo/vector-icons";
+import { v4 as uuidv4 } from "uuid";
 const NewRecord = () => {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState("");
@@ -246,6 +247,15 @@ const NewRecord = () => {
   // Form submit
   const { formData, setFormData } = useContext(FormDataContext);
 
+  const [formDataId, setFormDataId] = useState(null); // State for managing form data ID
+
+  const generateCustomId = () => {
+    const timestamp = Date.now().toString(); // Current timestamp as a string
+    const randomNum = Math.floor(Math.random() * 1000).toString();
+    // Random number between 0 and 999
+    return `ID-${timestamp}-${randomNum}`; // Constructed ID
+  };
+
   const handleSubmit = async () => {
     // Validation: Check for required fields
     // if (
@@ -265,12 +275,12 @@ const NewRecord = () => {
     //   console.error(
     //     "All fields except additionalDetails and deviceWarranty are required."
     //   );
-    //   // You can also set an error state here to display a user-friendly error message
     //   alert("Please fill in all required fields.");
     //   return; // Exit the function if validation fails
     // }
 
-    let newFormData = {
+    const newFormData = {
+      id: formDataId || generateCustomId(), // Use existing ID if available, otherwise generate a new one
       orderDetails: value,
       customerDetails: {
         customerList: customerList,
@@ -288,23 +298,49 @@ const NewRecord = () => {
       profitAmount: profitAmount,
       additionalDetails: additionalDetails, // Optional
       customerKyc: customerKyc,
-      selectedLocation: selectedLocation, // Include selectedLocation here
+      selectedLocation: selectedLocation,
       accessories: {
         isPowerSelected: isPowerSelected,
         isKeyboardSelected: isKeyboardSelected,
         isOtherDeviceSelected: isOtherDeviceSelected,
       },
+      serviceCenterName:
+        selectedLocation === "serviceCenter" ? serviceCenterName : "",
+      contactNo: selectedLocation === "serviceCenter" ? contactNo : "",
     };
 
-    // Add service center details only if selectedLocation is "serviceCenter"
-    if (selectedLocation === "serviceCenter") {
-      newFormData.serviceCenterName = serviceCenterName;
-      newFormData.contactNo = contactNo;
-    }
+    await setFormData((prevFormData) => {
+      // Check if OldFormData is defined
+      if (OldFormData) {
+        // Parse OldFormData if it's a string
+        const previousFormData =
+          typeof OldFormData === "string"
+            ? JSON.parse(OldFormData)
+            : OldFormData;
 
-    await setFormData((prevFormData) => [...prevFormData, newFormData]);
+        // Check if the ID already exists in the formData array
+        const existingIndex = prevFormData.findIndex(
+          (item) => item.id === previousFormData.id
+        );
 
-    // Reset all values to initial state
+        if (existingIndex > -1) {
+          // Update existing item if it is found
+          console.log("Updating existing entry with ID:", previousFormData.id);
+          return prevFormData.map((item, index) =>
+            index === existingIndex ? newFormData : item
+          );
+        }
+      }
+      // If OldFormData is undefined or no existing entry is found, add new item
+      console.log("Adding new entry with ID:", newFormData.id);
+      return [...prevFormData, newFormData];
+    });
+    router.push("/");
+  };
+
+  // Function to reset all form values
+  const resetForm = () => {
+    setFormDataId(""); // Clear the ID
     setOrderDetails("");
     setCustomerModel("");
     setProblems("");
@@ -340,9 +376,6 @@ const NewRecord = () => {
     setBarcode("");
     setScannerVisible(false);
     setIsPatternModalVisible(false);
-
-    router.push("/");
-    // console.log(formData);
   };
 
   useEffect(() => {
