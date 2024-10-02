@@ -74,6 +74,21 @@ const NewRecord = () => {
   const [customerList, setCustomerList] = useState([]);
   const [previous, setPrevious] = useState(null);
   const [customerKyc, setCustomerKyc] = useState({});
+  const [isPowerSelected, setIsPowerSelected] = useState(false); // For Power Adapter
+  const [isKeyboardSelected, setIsKeyboardSelected] = useState(false); // For Keyboard/Mouse
+  const [isOtherDeviceSelected, setIsOtherDeviceSelected] = useState(false); // For Other Device
+
+  const handlePowerSelection = () => {
+    setPowerSelected((prev) => !prev);
+  };
+
+  const handleKeyboardSelection = () => {
+    setKeyboardSelected((prev) => !prev);
+  };
+
+  const handleOtherDeviceSelection = () => {
+    setOtherDeviceSelected((prev) => !prev);
+  };
 
   const addProblem = () => {
     if (problems.trim()) {
@@ -274,6 +289,11 @@ const NewRecord = () => {
       additionalDetails: additionalDetails, // Optional
       customerKyc: customerKyc,
       selectedLocation: selectedLocation, // Include selectedLocation here
+      accessories: {
+        isPowerSelected: isPowerSelected,
+        isKeyboardSelected: isKeyboardSelected,
+        isOtherDeviceSelected: isOtherDeviceSelected,
+      },
     };
 
     // Add service center details only if selectedLocation is "serviceCenter"
@@ -349,6 +369,15 @@ const NewRecord = () => {
             setProfitAmount(previousFormData?.profitAmount);
             setBarcode(previousFormData?.barcode);
             setCustomerKyc(previousFormData?.customerKyc);
+
+            // Set accessory selections if available
+            setIsPowerSelected(previousFormData?.accessories?.isPowerSelected);
+            setIsKeyboardSelected(
+              previousFormData?.accessories?.isKeyboardSelected
+            );
+            setIsOtherDeviceSelected(
+              previousFormData?.accessories?.isOtherDeviceSelected
+            );
             setSelectedLocation(previousFormData.selectedLocation);
 
             // Check the selected location
@@ -745,18 +774,19 @@ const NewRecord = () => {
             >
               <RadioButton
                 value="yes"
-                status={isYesSelected ? "checked" : "unchecked"}
-                onPress={() => setIsYesSelected(true)}
+                status={isPowerSelected === true ? "checked" : "unchecked"}
+                onPress={() => setIsPowerSelected(true)}
               />
               <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
               <RadioButton
                 value="no"
-                status={!isYesSelected ? "checked" : "unchecked"}
-                onPress={() => setIsYesSelected(false)}
+                status={isPowerSelected === false ? "checked" : "unchecked"}
+                onPress={() => setIsPowerSelected(false)}
               />
               <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
             </View>
           </View>
+
           <View
             style={{
               flex: 1,
@@ -773,18 +803,19 @@ const NewRecord = () => {
             >
               <RadioButton
                 value="yes"
-                status={isYesSelected ? "checked" : "unchecked"}
-                onPress={() => setIsYesSelected(true)}
+                status={isKeyboardSelected === true ? "checked" : "unchecked"}
+                onPress={() => setIsKeyboardSelected(true)}
               />
               <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
               <RadioButton
                 value="no"
-                status={!isYesSelected ? "checked" : "unchecked"}
-                onPress={() => setIsYesSelected(false)}
+                status={isKeyboardSelected === false ? "checked" : "unchecked"}
+                onPress={() => setIsKeyboardSelected(false)}
               />
               <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
             </View>
           </View>
+
           <View
             style={{
               flex: 1,
@@ -801,14 +832,18 @@ const NewRecord = () => {
             >
               <RadioButton
                 value="yes"
-                status={isYesSelected ? "checked" : "unchecked"}
-                onPress={() => setIsYesSelected(true)}
+                status={
+                  isOtherDeviceSelected === true ? "checked" : "unchecked"
+                }
+                onPress={() => setIsOtherDeviceSelected(true)}
               />
               <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
               <RadioButton
                 value="no"
-                status={!isYesSelected ? "checked" : "unchecked"}
-                onPress={() => setIsYesSelected(false)}
+                status={
+                  isOtherDeviceSelected === false ? "checked" : "unchecked"
+                }
+                onPress={() => setIsOtherDeviceSelected(false)}
               />
               <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
             </View>
