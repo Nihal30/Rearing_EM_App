@@ -1,9 +1,16 @@
-// components/Toast.js
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const Toast = ({ message, visible, type }) => {
+const Toast = ({ message, visible, type, onClose }) => {
+  useEffect(() => {
+    if (visible) {
+      const timer = setTimeout(() => {
+        onClose(); // Call the onClose function after 3 seconds
+      }, 3000);
+      return () => clearTimeout(timer); // Clear timeout if the component unmounts or visibility changes
+    }
+  }, [visible]);
+
   if (!visible) return null; // Return null if not visible
 
   return (
@@ -18,25 +25,25 @@ const Toast = ({ message, visible, type }) => {
 const styles = StyleSheet.create({
   toast: {
     position: 'absolute',
-    top: 50, // Position at the top of the screen
+    top: 50,
     left: '50%',
     transform: [{ translateX: -150 }],
     padding: 10,
     borderRadius: 5,
     zIndex: 1000,
-    width: '80%', // Optional: adjust width
-    backgroundColor: '#ffffff', // Set a consistent background color
+    width: '80%',
+    backgroundColor: '#ffffff',
   },
   toastText: {
-    fontFamily:"outfit-medium",
+    fontFamily: 'outfit-medium',
     fontSize: 16,
-    textAlign: 'center', // Center text
+    textAlign: 'center',
   },
   successText: {
-    color: 'green', // Text color for success
+    color: 'green',
   },
   errorText: {
-    color: 'red', // Text color for error
+    color: 'red',
   },
 });
 

@@ -81,6 +81,7 @@ const NewRecord = () => {
   const [isKeyboardSelected, setIsKeyboardSelected] = useState(false); // For Keyboard/Mouse
   const [isOtherDeviceSelected, setIsOtherDeviceSelected] = useState(false); // For Other Device
   const [model, setModel] = useState("");
+  const [toast, setToast] = useState({ visible: false, message: '', type: '' });
 
   const handlePowerSelection = () => {
     setPowerSelected((prev) => !prev);
@@ -138,6 +139,7 @@ const NewRecord = () => {
     setBottomSheetVisible(false);
   };
 
+  // customer modal open
   const openDialog = () => {
     setDialogVisible(true);
   };
@@ -159,20 +161,24 @@ const NewRecord = () => {
   };
 
   // footer function ---
-  const dummyNumber = "1234567890"; // Dummy phone number
-  const message = "Hello, this is a test message."; // Dummy message for WhatsApp
+  const dummyNumber = "1234567890";
+  const message = "Hello";
 
   const handleCall = () => {
-    Linking.openURL(`tel:${dummyNumber}`);
+    Linking.openURL(`tel:${customerList[0]?.phone}`);
   };
 
   const handleMessage = () => {
-    Linking.openURL(`sms:${dummyNumber}?body=${encodeURIComponent(message)}`);
+    Linking.openURL(
+      `sms:${customerList[0]?.phone}?body=${encodeURIComponent(message)}`
+    );
   };
 
   const handleWhatsApp = () => {
     Linking.openURL(
-      `whatsapp://send?text=${encodeURIComponent(message)}&phone=${dummyNumber}`
+      `whatsapp://send?text=${encodeURIComponent(message)}&phone=${
+        customerList[0]?.phone
+      }`
     );
   };
 
@@ -273,8 +279,9 @@ const NewRecord = () => {
       console.error(
         "Order details, customer details, model, problem, date, time are required."
       );
-      alert(
-        "Please fill Order details, customer details, model, problem, date, time are required."
+      Alert.alert(
+        "Error",
+        "Please fill Order details, customer details, model, problem, date, time."
       );
       return; // Exit the function if validation fails
     }
@@ -311,25 +318,58 @@ const NewRecord = () => {
       contactNo: selectedLocation === "serviceCenter" ? contactNo : "",
     };
 
-    // Check if OldFormData is defined
-    if (OldFormData) {
-      // Parse OldFormData if it's a string
-      const previousFormData =
-        typeof OldFormData === "string" ? JSON.parse(OldFormData) : OldFormData;
+    try {
+      // Check if OldFormData is defined
+      if (OldFormData) {
+        // Parse OldFormData if it's a string
+        const previousFormData =
+          typeof OldFormData === "string" ? JSON.parse(OldFormData) : OldFormData;
 
-      // Update existing item if it is found
-      console.log("Updating existing entry with ID:", previousFormData.id);
-      await updateData(previousFormData.id, newFormData);
-    } else {
-      // If OldFormData is undefined, add new item
-      console.log("Adding new entry with ID:", newFormData.id);
-      await addData(newFormData);
+        // Update existing item if it is found
+        console.log("Updating existing entry with ID:", previousFormData.id);
+        await updateData(previousFormData.id, newFormData);
+
+        setToast({
+          visible: true,
+          message: 'Data updated successfully!',
+          type: 'success',
+        });
+      } else {
+        // If OldFormData is undefined, add new item
+        console.log("Adding new entry with ID:", newFormData.id);
+        await addData(newFormData);
+
+        setToast({
+          visible: true,
+          message: 'Data added successfully!',
+          type: 'success',
+        });
+      }
+
+      // Navigate to another screen
+      router.push("/");
+      resetForm();
+
+      // Hide the toast after 3 seconds
+      setTimeout(() => {
+        setToast({ visible: false, message: '', type: '' });
+      }, 3000);
+    } catch (error) {
+      console.error("Error saving data", error);
+
+      setToast({
+        visible: true,
+        message: 'Failed to save data!',
+        type: 'error',
+      });
+
+      // Hide the toast after 3 seconds
+      setTimeout(() => {
+        setToast({ visible: false, message: '', type: '' });
+      }, 3000);
     }
-
-    // Navigate to another screen
-    router.push("/");
-    resetForm();
   };
+
 
   // Function to reset all form values
   const resetForm = () => {
@@ -475,6 +515,15 @@ const NewRecord = () => {
     };
   }, []);
 
+  const [updateCustomer,setUpdateCustomer]=useState(null)
+
+  const openBottomSheetForUpdate = (customer) => {
+    console.log('item customer',customer)
+    setUpdateCustomer(customer)
+  
+    setBottomSheetVisible(true);
+  };
+
   return (
     <View
       style={{
@@ -483,11 +532,13 @@ const NewRecord = () => {
         // display: isScannerVisible ? "none" : "block",
       }}
     >
-      <View style={{
-        flex: 1,
-        backgroundColor: "#ffffff",
-        display: isScannerVisible ? "none" : "block",
-      }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#ffffff",
+          display: isScannerVisible ? "none" : "block",
+        }}
+      >
         {/* Header */}
         <View
           style={{
@@ -547,7 +598,8 @@ const NewRecord = () => {
             {/* Buttons for Select and Add */}
             {customerList?.length > 0 &&
               customerList?.map((item, index) => (
-                <View
+                <TouchableOpacity
+                  key={index}
                   style={[
                     styles.customerDetails,
                     {
@@ -558,7 +610,7 @@ const NewRecord = () => {
                       alignItems: "center",
                     },
                   ]}
-                  key={index}
+                  onPress={() => openBottomSheetForUpdate(item)}
                 >
                   <View>
                     <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
@@ -572,7 +624,7 @@ const NewRecord = () => {
 
                     {item.address && (
                       <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
-                        address :{item.address}
+                        Address : {item.address}
                       </Text>
                     )}
                   </View>
@@ -586,8 +638,9 @@ const NewRecord = () => {
                   >
                     <MaterialIcons name="close" size={24} color="red" />
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               ))}
+
             <View
               style={{
                 flex: 1,
@@ -601,7 +654,7 @@ const NewRecord = () => {
                 editable={false}
                 value={customerModel}
                 // onChangeText={setCustomerModel}
-                style={[styles.input,{width:200}]}
+                style={[styles.input, { width: 190 }]}
                 placeholder="Select customers "
               />
               <TouchableOpacity
@@ -1024,11 +1077,24 @@ const NewRecord = () => {
                         setContactNoError(false); // Clear error if valid
                       }
                     }}
-                    style={[styles.input, { height: 50, marginTop: 10, borderColor:contactNoError ? 'red':'gray'}]}
+                    style={[
+                      styles.input,
+                      {
+                        height: 50,
+                        marginTop: 10,
+                        borderColor: contactNoError ? "red" : "gray",
+                      },
+                    ]}
                     placeholder="Contact No"
                     keyboardType="phone-pad"
                   />
-                  {contactNoError && <Text style={{marginTop:5,marginBottom:10 ,color:"red"}}>Add 10 digit number</Text>}
+                  {contactNoError && (
+                    <Text
+                      style={{ marginTop: 5, marginBottom: 10, color: "red" }}
+                    >
+                      Add 10 digit number
+                    </Text>
+                  )}
                   <View
                     style={[
                       styles.buttonContainer,
@@ -1045,10 +1111,23 @@ const NewRecord = () => {
                       onPress={() => Linking.openURL(`tel:${contactNo}`)}
                       style={[
                         styles.button,
-                        { height: "100%", width: 150, borderRadius: 10 },
+                        { height: "100%", width: 90, borderRadius: 10 },
                       ]}
                     >
-                      <Text style={styles.buttonText}>Call</Text>
+                        <Icon name="call" size={25} color="#ffffff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() =>  Linking.openURL(
+                        `whatsapp://send?text=${encodeURIComponent(message)}&phone=${
+                          contactNo
+                        }`
+                      )}
+                      style={[
+                        styles.button,
+                        { height: "100%", width: 90, borderRadius: 10 },
+                      ]}
+                    >
+                      <Icon name="logo-whatsapp" size={25} color="#ffffff" />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() =>
@@ -1058,10 +1137,10 @@ const NewRecord = () => {
                       }
                       style={[
                         styles.button,
-                        { height: "100%", width: 150, borderRadius: 10 },
+                        { height: "100%", width: 90, borderRadius: 10 },
                       ]}
                     >
-                      <Text style={styles.buttonText}>Message</Text>
+                      <Icon name="chatbox-ellipses" size={25} color="#ffffff" />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -1156,7 +1235,7 @@ const NewRecord = () => {
       </View>
 
       {/* Toast component */}
-      <Toast message={toastMessage} visible={toastVisible} type={toastType} />
+      <Toast message={toastMessage} visible={toastVisible} type={toastType} onClose={() => setToastVisible(false)}/>
       {/* Select Model Dialog */}
       <SelectModelDialog
         visible={isDialogVisible}
@@ -1173,6 +1252,7 @@ const NewRecord = () => {
         headerText="Add Customer Details"
         onAddCustomer={handleAddCustomer}
         setCustomerDetails={setCustomerDetails}
+        updateCustomer={updateCustomer}
       />
 
       <CustomerKyc
@@ -1273,11 +1353,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   picker: {
-    width: 360,
+    width: "100%",
     backgroundColor: "#fafafa",
   },
   dropdownContainer: {
-    width: 200,
+    width: '100%',
     marginTop: 5, // Adjust the margin to position it just below the picker
   },
   customerDetails: {

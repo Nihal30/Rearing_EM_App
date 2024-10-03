@@ -5,6 +5,7 @@ import {
   FlatList,
   StyleSheet,
   Image,
+  Alert,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -12,14 +13,16 @@ import { TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { FormDataContext } from "../../hooks/FormDataConextApi";
 import NoData from "../../assets/images/noData.jpg";
+import Toast from "../../components/Toast";
 
 const SearchRecord = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const { formData } = useContext(FormDataContext);
+  const { formData, deleteData } = useContext(FormDataContext);
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [toast, setToast] = useState({ visible: false, message: "", type: "" });
 
   useEffect(() => {
     setData(formData);
@@ -73,6 +76,46 @@ const SearchRecord = () => {
     }
   };
 
+  const handleDelete = (id) => {
+    Alert.alert(
+      "Delete Record",
+      "Are you sure you want to delete this record?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Deletion cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              console.log("id", id);
+              await deleteData(id);
+              setToast({
+                visible: true,
+                message: "Record deleted successfully!",
+                type: "success",
+              });
+            } catch (error) {
+              setToast({
+                visible: true,
+                message: "Failed to delete record!",
+                type: "error",
+              });
+            }
+
+            // Hide the toast after 3 seconds
+            setTimeout(() => {
+              setToast({ visible: false, message: "", type: "" });
+            }, 3000);
+          },
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
@@ -162,6 +205,35 @@ const SearchRecord = () => {
                 }
               >
                 <View style={styles.listItem}>
+                  <View
+                    style={[
+                      styles.titleValueContainer,
+                      {
+                        flex: 1,
+                        direction: "row",
+                        justifyContent: "flex-end",
+                        margin: 5,
+                        marginBottom: 10,
+                        backgroundColor: "#ccc",
+                        padding: 5,
+                        alignItems: "center",
+                        borderRadius: 10,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.titleText}>Customer Details</Text>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "#D3D3D3",
+                        padding: 2,
+                        borderRadius: 30,
+                      }}
+                      onPress={() => handleDelete(item.id)}
+                    >
+                      <Icon name="close" size={20} color="#ff0000" />
+                    </TouchableOpacity>
+                  </View>
+
                   <View style={styles.titleValueContainer}>
                     <Text style={styles.titleText}>Order Status:</Text>
                     <Text
@@ -225,6 +297,12 @@ const SearchRecord = () => {
           />
         )}
       </View>
+      <Toast
+        message={toast.message}
+        visible={toast?.visible}
+        type={toast.type}
+        onClose={() => setToastVisible(false)}
+      />
     </View>
   );
 };
