@@ -247,7 +247,8 @@ const NewRecord = () => {
   // ----
 
   // Form submit
-  const { formData, setFormData ,addData, updateData } = useContext(FormDataContext);
+  const { formData, setFormData, addData, updateData } =
+    useContext(FormDataContext);
 
   const [formDataId, setFormDataId] = useState(null); // State for managing form data ID
 
@@ -313,9 +314,7 @@ const NewRecord = () => {
     if (OldFormData) {
       // Parse OldFormData if it's a string
       const previousFormData =
-        typeof OldFormData === "string"
-          ? JSON.parse(OldFormData)
-          : OldFormData;
+        typeof OldFormData === "string" ? JSON.parse(OldFormData) : OldFormData;
 
       // Update existing item if it is found
       console.log("Updating existing entry with ID:", previousFormData.id);
@@ -476,175 +475,179 @@ const NewRecord = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: "#DE3163",
-          padding: 10,
-        }}
-      >
-        {/* Back Button */}
-        <TouchableOpacity
-          style={{ marginTop: 40, marginLeft: 10 }}
-          onPress={() => router.back()}
-        >
-          <Icon name="arrow-back" size={25} color="#ffffff" />
-        </TouchableOpacity>
-
-        {/* Header Text */}
-        <Text
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#ffffff",
+        // display: isScannerVisible ? "none" : "block",
+      }}
+    >
+      <View style={{
+        flex: 1,
+        backgroundColor: "#ffffff",
+        display: isScannerVisible ? "none" : "block",
+      }}>
+        {/* Header */}
+        <View
           style={{
-            color: "#ffffff",
-            fontFamily: "outfit-medium",
-            fontSize: 20,
-            flex: 1,
-            textAlign: "center",
-            marginTop: 40,
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#DE3163",
+            padding: 10,
           }}
         >
-          ADD RECORDS
-        </Text>
-      </View>
+          {/* Back Button */}
+          <TouchableOpacity
+            style={{ marginTop: 40, marginLeft: 10 }}
+            onPress={() => router.back()}
+          >
+            <Icon name="arrow-back" size={25} color="#ffffff" />
+          </TouchableOpacity>
 
-      {/* Form */}
-      <ScrollView style={styles.formContainer}>
-        {/* Dropdown for Order Details */}
-        <Text style={styles.label}>Order Details:</Text>
-        <DropDownPicker
-          open={open}
-          value={value}
-          items={items}
-          setOpen={setOpen}
-          setValue={setValue}
-          setItems={setItems}
-          placeholder="Select Order"
-          style={styles.picker}
-          dropDownContainerStyle={styles.dropdownContainer}
-        />
-
-        <View
-          style={[styles.customerDetails, { borderRadius: 10, marginTop: 10 }]}
-        >
-          <Text style={styles.label}>Customer Details</Text>
-
-          {/* Buttons for Select and Add */}
-          {customerList?.length > 0 &&
-            customerList?.map((item, index) => (
-              <View
-                style={[
-                  styles.customerDetails,
-                  {
-                    margin: 10,
-                    borderRadius: 10,
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                    alignItems: "center",
-                  },
-                ]}
-                key={index}
-              >
-                <View>
-                  <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
-                    Name : {item.name}
-                  </Text>
-                  {item.phone && (
-                    <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
-                      Phone : {item.phone}
-                    </Text>
-                  )}
-
-                  {item.address && (
-                    <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
-                      address :{item.address}
-                    </Text>
-                  )}
-                </View>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "#D3D3D3",
-                    padding: 2,
-                    borderRadius: 30,
-                  }}
-                  onPress={() => removeItem(item.name, item.phone)}
-                >
-                  <MaterialIcons name="close" size={24} color="red" />
-                </TouchableOpacity>
-              </View>
-            ))}
-          <View
+          {/* Header Text */}
+          <Text
             style={{
+              color: "#ffffff",
+              fontFamily: "outfit-medium",
+              fontSize: 20,
               flex: 1,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
+              textAlign: "center",
+              marginTop: 40,
             }}
           >
-            {/* Customer Details */}
-            <TextInput
-              editable={false}
-              value={customerModel}
-              // onChangeText={setCustomerModel}
-              style={styles.input}
-              placeholder="Enter customer model"
-            />
-            <TouchableOpacity
-              style={[
-                styles.button,
-                { height: "100%", width: 70, borderRadius: 10 },
-              ]}
-              onPress={openDialog}
-            >
-              <Text style={styles.buttonText}>Select</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.button,
-                { height: "100%", width: 70, borderRadius: 10 },
-              ]}
-              onPress={openBottomSheet}
-            >
-              <Text style={styles.buttonText}>Add</Text>
-            </TouchableOpacity>
-          </View>
+            ADD RECORDS
+          </Text>
         </View>
-        <Text style={[styles.label, { marginTop: 10 }]}>Model</Text>
 
-        <TextInput
-          value={model}
-          onChangeText={setModel}
-          style={[styles.input, { height: 50, marginTop: 2 }]} // Adjust height for multiline
-          placeholder="Model"
-          multiline
-        />
+        {/* Form */}
+        <ScrollView style={styles.formContainer}>
+          {/* Dropdown for Order Details */}
+          <Text style={styles.label}>Order Details:</Text>
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+            placeholder="Select Order"
+            style={styles.picker}
+            dropDownContainerStyle={styles.dropdownContainer}
+          />
 
-        {/* Multiline Input for Problems */}
-        <Text style={[styles.label, { marginTop: 10 }]}>Write Problems:</Text>
-        {problemList?.length > 0 && (
-          <ScrollView
-            style={{
-              borderWidth: 0.8,
-              margin: 2,
-              marginBottom: 5,
-              borderRadius: 10,
-            }}
+          <View
+            style={[
+              styles.customerDetails,
+              { borderRadius: 10, marginTop: 10 },
+            ]}
           >
-            {problemList.map((item, index) => (
-              <View
-                key={index}
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  gap: 10,
-                  margin: 10,
-                  marginLeft: 12,
-                  alignItems: "center",
-                }}
-              >
+            <Text style={styles.label}>Customer Details</Text>
+
+            {/* Buttons for Select and Add */}
+            {customerList?.length > 0 &&
+              customerList?.map((item, index) => (
                 <View
+                  style={[
+                    styles.customerDetails,
+                    {
+                      margin: 10,
+                      borderRadius: 10,
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    },
+                  ]}
+                  key={index}
+                >
+                  <View>
+                    <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
+                      Name : {item.name}
+                    </Text>
+                    {item.phone && (
+                      <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
+                        Phone : {item.phone}
+                      </Text>
+                    )}
+
+                    {item.address && (
+                      <Text style={{ fontFamily: "outfit", borderRadius: 10 }}>
+                        address :{item.address}
+                      </Text>
+                    )}
+                  </View>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#D3D3D3",
+                      padding: 2,
+                      borderRadius: 30,
+                    }}
+                    onPress={() => removeItem(item.name, item.phone)}
+                  >
+                    <MaterialIcons name="close" size={24} color="red" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              {/* Customer Details */}
+              <TextInput
+                editable={false}
+                value={customerModel}
+                // onChangeText={setCustomerModel}
+                style={styles.input}
+                placeholder="Enter customer model"
+              />
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  { height: "100%", width: 70, borderRadius: 10 },
+                ]}
+                onPress={openDialog}
+              >
+                <Text style={styles.buttonText}>Select</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  { height: "100%", width: 70, borderRadius: 10 },
+                ]}
+                onPress={openBottomSheet}
+              >
+                <Text style={styles.buttonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Text style={[styles.label, { marginTop: 10 }]}>Model</Text>
+
+          <TextInput
+            value={model}
+            onChangeText={setModel}
+            style={[styles.input, { height: 50, marginTop: 2 }]} // Adjust height for multiline
+            placeholder="Model"
+            multiline
+          />
+
+          {/* Multiline Input for Problems */}
+          <Text style={[styles.label, { marginTop: 10 }]}>Write Problems:</Text>
+          {problemList?.length > 0 && (
+            <ScrollView
+              style={{
+                borderWidth: 0.8,
+                margin: 2,
+                marginBottom: 5,
+                borderRadius: 10,
+              }}
+            >
+              {problemList.map((item, index) => (
+                <View
+                  key={index}
                   style={{
                     flex: 1,
                     flexDirection: "row",
@@ -654,86 +657,96 @@ const NewRecord = () => {
                     alignItems: "center",
                   }}
                 >
-                  <Checkbox
-                    value={item.checked}
-                    onValueChange={() => toggleCheckbox(index)}
-                    style={{ color: "gray" }}
-                  />
-                  <Text style={item.checked && styles.checkedText}>
-                    {item.text}
-                  </Text>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      gap: 10,
+                      margin: 10,
+                      marginLeft: 12,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Checkbox
+                      value={item.checked}
+                      onValueChange={() => toggleCheckbox(index)}
+                      style={{ color: "gray" }}
+                    />
+                    <Text style={item.checked && styles.checkedText}>
+                      {item.text}
+                    </Text>
+                  </View>
+
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#D3D3D3",
+                      padding: 1,
+                      borderRadius: 30,
+                    }}
+                    onPress={() => removeProblemsItem(index)}
+                  >
+                    <MaterialIcons name="close" size={20} color="red" />
+                  </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "#D3D3D3",
-                    padding: 1,
-                    borderRadius: 30,
-                  }}
-                  onPress={() => removeProblemsItem(index)}
-                >
-                  <MaterialIcons name="close" size={20} color="red" />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </ScrollView>
-        )}
-        <View style={{ flex: 1, width: "100%" }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              width: "100%",
-            }}
-          >
-            <TextInput
-              value={problems}
-              onChangeText={setProblems}
-              style={[styles.input, { width: "75%" }]}
-              placeholder="Describe problems"
-            />
-            <TouchableOpacity
-              style={[
-                styles.button,
-                { height: 50, width: 70, borderRadius: 10 },
-              ]}
-              onPress={addProblem}
+              ))}
+            </ScrollView>
+          )}
+          <View style={{ flex: 1, width: "100%" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+                width: "100%",
+              }}
             >
-              <Text style={styles.buttonText}>Add</Text>
-            </TouchableOpacity>
+              <TextInput
+                value={problems}
+                onChangeText={setProblems}
+                style={[styles.input, { width: "75%" }]}
+                placeholder="Describe problems"
+              />
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  { height: 50, width: 70, borderRadius: 10 },
+                ]}
+                onPress={addProblem}
+              >
+                <Text style={styles.buttonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
-        {/* Button for Customer KYC */}
-        <TouchableOpacity
-          style={[styles.button, { marginTop: 15 }]}
-          onPress={() => setKycVisible(true)}
-        >
-          <Text style={styles.buttonText}>Customer KYC</Text>
-        </TouchableOpacity>
+          {/* Button for Customer KYC */}
+          <TouchableOpacity
+            style={[styles.button, { marginTop: 15 }]}
+            onPress={() => setKycVisible(true)}
+          >
+            <Text style={styles.buttonText}>Customer KYC</Text>
+          </TouchableOpacity>
 
-        {/* Price and Paid Inputs */}
-        <Text style={styles.label}>Price:</Text>
-        <TextInput
-          value={price}
-          onChangeText={setPrice}
-          style={styles.input}
-          placeholder="Enter price"
-          keyboardType="numeric"
-        />
+          {/* Price and Paid Inputs */}
+          <Text style={styles.label}>Price:</Text>
+          <TextInput
+            value={price}
+            onChangeText={setPrice}
+            style={styles.input}
+            placeholder="Enter price"
+            keyboardType="numeric"
+          />
 
-        <Text style={[styles.label, { marginTop: 10 }]}>Paid:</Text>
-        <TextInput
-          value={paid}
-          onChangeText={setPaid}
-          style={styles.input}
-          placeholder="Enter paid amount"
-          keyboardType="numeric"
-        />
+          <Text style={[styles.label, { marginTop: 10 }]}>Paid:</Text>
+          <TextInput
+            value={paid}
+            onChangeText={setPaid}
+            style={styles.input}
+            placeholder="Enter paid amount"
+            keyboardType="numeric"
+          />
 
-        {/* Lock Code Input */}
-        {/* <Text style={[styles.label, { marginTop: 10 }]}>Lock Code:</Text>
+          {/* Lock Code Input */}
+          {/* <Text style={[styles.label, { marginTop: 10 }]}>Lock Code:</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <TextInput
             value={lockCode}
@@ -753,376 +766,385 @@ const NewRecord = () => {
           </TouchableOpacity>
         </View> */}
 
-        {/* Date Picker */}
-        <Text style={[styles.label, { marginTop: 10 }]}>Select Date:</Text>
-        {date && (
-          <View
-            style={{
-              backgroundColor: "#ffffff",
-              padding: 10,
-              margin: 10,
-              borderWidth: 1,
-              borderRadius: 10,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ fontFamily: "outfit-medium" }}>
-              Date: {date ? moment(date).format("DD MMM YYYY") : ""}
-            </Text>
-            <TouchableOpacity
+          {/* Date Picker */}
+          <Text style={[styles.label, { marginTop: 10 }]}>Select Date:</Text>
+          {date && (
+            <View
               style={{
-                backgroundColor: "#D3D3D3",
-                padding: 2,
-                borderRadius: 30,
+                backgroundColor: "#ffffff",
+                padding: 10,
+                margin: 10,
+                borderWidth: 1,
+                borderRadius: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
-              onPress={() => setDate(new Date())}
             >
-              {/* <MaterialIcons name="close" size={24} color="red" /> */}
-            </TouchableOpacity>
-          </View>
-        )}
-        <TouchableOpacity
-          onPress={() => setShowDatePicker(true)}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Show Date Picker</Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-          />
-        )}
-
-        {/* Time Picker */}
-        <Text style={styles.label}>Select Repair Time:</Text>
-        {time && (
-          <View
-            style={{
-              backgroundColor: "#ffffff",
-              padding: 10,
-              margin: 10,
-              borderWidth: 1,
-              borderRadius: 10,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ fontFamily: "outfit-medium" }}>
-              Time: {time ? moment(time).format("HH:mm") : ""}
-            </Text>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#D3D3D3",
-                padding: 2,
-                borderRadius: 30,
-              }}
-              onPress={() => setTime(new Date())}
-            >
-              {/* <MaterialIcons name="close" size={24} color="red" /> */}
-            </TouchableOpacity>
-          </View>
-        )}
-        <TouchableOpacity
-          onPress={() => setShowTimePicker(true)}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Show Time Picker</Text>
-        </TouchableOpacity>
-        {showTimePicker && (
-          <DateTimePicker
-            value={time}
-            mode="time"
-            display="default"
-            onChange={onTimeChange}
-          />
-        )}
-
-        {/* Radio Group for Yes/No */}
-        <Text style={[styles.label, { marginTop: 10 }]}>Accessories</Text>
-        <View style={{}}>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
-              Power Adapter
-            </Text>
-            <View
-              style={[styles.radioGroup, { flex: 1, flexDirection: "row" }]}
-            >
-              <RadioButton
-                value="yes"
-                status={isPowerSelected === true ? "checked" : "unchecked"}
-                onPress={() => setIsPowerSelected(true)}
-              />
-              <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
-              <RadioButton
-                value="no"
-                status={isPowerSelected === false ? "checked" : "unchecked"}
-                onPress={() => setIsPowerSelected(false)}
-              />
-              <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
+              <Text style={{ fontFamily: "outfit-medium" }}>
+                Date: {date ? moment(date).format("DD MMM YYYY") : ""}
+              </Text>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "#D3D3D3",
+                  padding: 2,
+                  borderRadius: 30,
+                }}
+                onPress={() => setDate(new Date())}
+              >
+                {/* <MaterialIcons name="close" size={24} color="red" /> */}
+              </TouchableOpacity>
             </View>
-          </View>
-
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
-              Keyboard/Mouse
-            </Text>
-            <View
-              style={[styles.radioGroup, { flex: 1, flexDirection: "row" }]}
-            >
-              <RadioButton
-                value="yes"
-                status={isKeyboardSelected === true ? "checked" : "unchecked"}
-                onPress={() => setIsKeyboardSelected(true)}
-              />
-              <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
-              <RadioButton
-                value="no"
-                status={isKeyboardSelected === false ? "checked" : "unchecked"}
-                onPress={() => setIsKeyboardSelected(false)}
-              />
-              <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
-            </View>
-          </View>
-
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
-              Other Device
-            </Text>
-            <View
-              style={[styles.radioGroup, { flex: 1, flexDirection: "row" }]}
-            >
-              <RadioButton
-                value="yes"
-                status={
-                  isOtherDeviceSelected === true ? "checked" : "unchecked"
-                }
-                onPress={() => setIsOtherDeviceSelected(true)}
-              />
-              <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
-              <RadioButton
-                value="no"
-                status={
-                  isOtherDeviceSelected === false ? "checked" : "unchecked"
-                }
-                onPress={() => setIsOtherDeviceSelected(false)}
-              />
-              <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Barcode Input */}
-        <Text style={[styles.label, { marginTop: 10 }]}>Barcode:</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <TextInput
-            value={barcode}
-            onChangeText={setBarcode}
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Enter or scan barcode"
-          />
+          )}
           <TouchableOpacity
-            onPress={() => setScannerVisible(true)}
+            onPress={() => setShowDatePicker(true)}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Show Date Picker</Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+            />
+          )}
+
+          {/* Time Picker */}
+          <Text style={styles.label}>Select Repair Time:</Text>
+          {time && (
+            <View
+              style={{
+                backgroundColor: "#ffffff",
+                padding: 10,
+                margin: 10,
+                borderWidth: 1,
+                borderRadius: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={{ fontFamily: "outfit-medium" }}>
+                Time: {time ? moment(time).format("HH:mm") : ""}
+              </Text>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "#D3D3D3",
+                  padding: 2,
+                  borderRadius: 30,
+                }}
+                onPress={() => setTime(new Date())}
+              >
+                {/* <MaterialIcons name="close" size={24} color="red" /> */}
+              </TouchableOpacity>
+            </View>
+          )}
+          <TouchableOpacity
+            onPress={() => setShowTimePicker(true)}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Show Time Picker</Text>
+          </TouchableOpacity>
+          {showTimePicker && (
+            <DateTimePicker
+              value={time}
+              mode="time"
+              display="default"
+              onChange={onTimeChange}
+            />
+          )}
+
+          {/* Radio Group for Yes/No */}
+          <Text style={[styles.label, { marginTop: 10 }]}>Accessories</Text>
+          <View style={{}}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
+                Power Adapter
+              </Text>
+              <View
+                style={[styles.radioGroup, { flex: 1, flexDirection: "row" }]}
+              >
+                <RadioButton
+                  value="yes"
+                  status={isPowerSelected === true ? "checked" : "unchecked"}
+                  onPress={() => setIsPowerSelected(true)}
+                />
+                <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
+                <RadioButton
+                  value="no"
+                  status={isPowerSelected === false ? "checked" : "unchecked"}
+                  onPress={() => setIsPowerSelected(false)}
+                />
+                <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
+              </View>
+            </View>
+
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
+                Keyboard/Mouse
+              </Text>
+              <View
+                style={[styles.radioGroup, { flex: 1, flexDirection: "row" }]}
+              >
+                <RadioButton
+                  value="yes"
+                  status={isKeyboardSelected === true ? "checked" : "unchecked"}
+                  onPress={() => setIsKeyboardSelected(true)}
+                />
+                <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
+                <RadioButton
+                  value="no"
+                  status={
+                    isKeyboardSelected === false ? "checked" : "unchecked"
+                  }
+                  onPress={() => setIsKeyboardSelected(false)}
+                />
+                <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
+              </View>
+            </View>
+
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={[styles.label, { marginTop: 10, width: 200 }]}>
+                Other Device
+              </Text>
+              <View
+                style={[styles.radioGroup, { flex: 1, flexDirection: "row" }]}
+              >
+                <RadioButton
+                  value="yes"
+                  status={
+                    isOtherDeviceSelected === true ? "checked" : "unchecked"
+                  }
+                  onPress={() => setIsOtherDeviceSelected(true)}
+                />
+                <Text style={[styles.label, { marginTop: 8 }]}>Yes</Text>
+                <RadioButton
+                  value="no"
+                  status={
+                    isOtherDeviceSelected === false ? "checked" : "unchecked"
+                  }
+                  onPress={() => setIsOtherDeviceSelected(false)}
+                />
+                <Text style={[styles.label, { marginTop: 8 }]}>No</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Barcode Input */}
+          <Text style={[styles.label, { marginTop: 10 }]}>Barcode:</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <TextInput
+              value={barcode}
+              onChangeText={setBarcode}
+              style={[styles.input, { flex: 1 }]}
+              placeholder="Enter or scan barcode"
+            />
+            <TouchableOpacity
+              onPress={() => setScannerVisible(true)}
+              style={[
+                styles.button,
+                { alignItems: "center", justifyContent: "center", height: 50 },
+              ]}
+            >
+              <Text style={styles.buttonText}>Scan</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Owner/Assistant */}
+          <View
             style={[
-              styles.button,
-              { alignItems: "center", justifyContent: "center", height: 50 },
+              styles.customerDetails,
+              { borderRadius: 10, marginTop: 10 },
             ]}
           >
-            <Text style={styles.buttonText}>Scan</Text>
-          </TouchableOpacity>
-        </View>
+            <TextInput
+              value={owner}
+              onChangeText={setOwner}
+              style={[styles.input, { height: 50, marginTop: 10 }]} // Adjust height for multiline
+              placeholder="Name Of Receiver(Owner/Assistant)"
+              multiline
+            />
+            <View>
+              <Text style={[styles.label, { marginTop: 10 }]}>
+                Other Location:
+              </Text>
+              <RadioButton.Group
+                onValueChange={setSelectedLocation}
+                value={selectedLocation}
+              >
+                <View style={styles.radioContainer}>
+                  <RadioButton value="inHouse" />
+                  <Text>In-house</Text>
+                </View>
+                <View style={styles.radioContainer}>
+                  <RadioButton value="serviceCenter" />
+                  <Text>Service Center</Text>
+                </View>
+              </RadioButton.Group>
 
-        {/* Owner/Assistant */}
-        <View
-          style={[styles.customerDetails, { borderRadius: 10, marginTop: 10 }]}
-        >
+              {selectedLocation === "serviceCenter" && (
+                <View>
+                  <TextInput
+                    value={serviceCenterName}
+                    onChangeText={setServiceCenterName}
+                    style={[styles.input, { height: 50, marginTop: 10 }]}
+                    placeholder="Name of the Service Center"
+                  />
+                  <TextInput
+                    value={contactNo}
+                    onChangeText={setContactNo}
+                    style={[styles.input, { height: 50, marginTop: 10 }]}
+                    placeholder="Contact No"
+                    keyboardType="phone-pad"
+                  />
+                  <View
+                    style={[
+                      styles.buttonContainer,
+                      {
+                        flex: 1,
+                        flexDirection: "row",
+                        justifyContent: "space-around",
+                        marginTop: 10,
+                        marginBottom: 10,
+                      },
+                    ]}
+                  >
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL(`tel:${contactNo}`)}
+                      style={[
+                        styles.button,
+                        { height: "100%", width: 150, borderRadius: 10 },
+                      ]}
+                    >
+                      <Text style={styles.buttonText}>Call</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() =>
+                        Linking.openURL(
+                          `sms:${contactNo}?body=${encodeURIComponent(message)}`
+                        )
+                      }
+                      style={[
+                        styles.button,
+                        { height: "100%", width: 150, borderRadius: 10 },
+                      ]}
+                    >
+                      <Text style={styles.buttonText}>Message</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Additional Details */}
           <TextInput
-            value={owner}
-            onChangeText={setOwner}
+            value={additionalDetails}
+            onChangeText={setAdditionalDetails}
             style={[styles.input, { height: 50, marginTop: 10 }]} // Adjust height for multiline
-            placeholder="Name Of Receiver(Owner/Assistant)"
+            placeholder="Additional Details"
             multiline
           />
-          <View>
-            <Text style={[styles.label, { marginTop: 10 }]}>
-              Other Location:
-            </Text>
-            <RadioButton.Group
-              onValueChange={setSelectedLocation}
-              value={selectedLocation}
-            >
-              <View style={styles.radioContainer}>
-                <RadioButton value="inHouse" />
-                <Text>In-house</Text>
-              </View>
-              <View style={styles.radioContainer}>
-                <RadioButton value="serviceCenter" />
-                <Text>Service Center</Text>
-              </View>
-            </RadioButton.Group>
 
-            {selectedLocation === "serviceCenter" && (
-              <View>
-                <TextInput
-                  value={serviceCenterName}
-                  onChangeText={setServiceCenterName}
-                  style={[styles.input, { height: 50, marginTop: 10 }]}
-                  placeholder="Name of the Service Center"
-                />
-                <TextInput
-                  value={contactNo}
-                  onChangeText={setContactNo}
-                  style={[styles.input, { height: 50, marginTop: 10 }]}
-                  placeholder="Contact No"
-                  keyboardType="phone-pad"
-                />
-                <View
-                  style={[
-                    styles.buttonContainer,
-                    {
-                      flex: 1,
-                      flexDirection: "row",
-                      justifyContent: "space-around",
-                      marginTop: 10,
-                      marginBottom: 10,
-                    },
-                  ]}
-                >
-                  <TouchableOpacity
-                    onPress={() => Linking.openURL(`tel:${contactNo}`)}
-                    style={[
-                      styles.button,
-                      { height: "100%", width: 150, borderRadius: 10 },
-                    ]}
-                  >
-                    <Text style={styles.buttonText}>Call</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() =>
-                      Linking.openURL(
-                        `sms:${contactNo}?body=${encodeURIComponent(message)}`
-                      )
-                    }
-                    style={[
-                      styles.button,
-                      { height: "100%", width: 150, borderRadius: 10 },
-                    ]}
-                  >
-                    <Text style={styles.buttonText}>Message</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
+          <Text style={[styles.label, { marginTop: 10 }]}>
+            * Enter Profit Amount Below to Calculate Day-Wise
+          </Text>
+          <TextInput
+            value={profitAmount}
+            onChangeText={setProfitAmount}
+            style={styles.input}
+            placeholder="Profit From Order"
+            keyboardType="numeric"
+          />
+
+          {/* Device Warranty*/}
+          <Text style={[styles.label, { marginTop: 10 }]}>
+            * Enter Warranty. This will show to users if he is a user of Mobile
+            Solution Application and using the same number or alternative number
+            for Mobile Solution App Account. He can see order status, order
+            details, order images.
+          </Text>
+          <TextInput
+            value={deviceWarranty}
+            onChangeText={setDeviceWarranty}
+            style={[styles.input, { height: 50 }]} // Adjust height for multiline
+            placeholder="Device Warranty"
+            multiline
+          />
+
+          <View style={{ marginBottom: 30 }} />
+        </ScrollView>
+
+        {/* Footer */}
+        {!isKeyboardVisible && (
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+            >
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
+
+            <View style={styles.horizontalButtons}>
+              <TouchableOpacity
+                style={styles.horizontalButton}
+                onPress={handleCall}
+              >
+                <Text style={styles.buttonText}>
+                  <Icon name="call" size={25} color="#ffffff" />
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.horizontalButton}
+                onPress={handleMessage}
+              >
+                <Text style={styles.buttonText}>
+                  <Icon name="chatbox-ellipses" size={25} color="#ffffff" />
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.horizontalButton}
+                onPress={handleWhatsApp}
+              >
+                <Text style={styles.buttonText}>
+                  <Icon name="logo-whatsapp" size={25} color="#ffffff" />
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.horizontalButton}
+                onPress={handlePrint}
+              >
+                <Text style={styles.buttonText}>
+                  <Icon name="print" size={25} color="#ffffff" />
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-
-        {/* Additional Details */}
-        <TextInput
-          value={additionalDetails}
-          onChangeText={setAdditionalDetails}
-          style={[styles.input, { height: 50, marginTop: 10 }]} // Adjust height for multiline
-          placeholder="Additional Details"
-          multiline
-        />
-
-        <Text style={[styles.label, { marginTop: 10 }]}>
-          * Enter Profit Amount Below to Calculate Day-Wise
-        </Text>
-        <TextInput
-          value={profitAmount}
-          onChangeText={setProfitAmount}
-          style={styles.input}
-          placeholder="Profit From Order"
-          keyboardType="numeric"
-        />
-
-        {/* Device Warranty*/}
-        <Text style={[styles.label, { marginTop: 10 }]}>
-          * Enter Warranty. This will show to users if he is a user of Mobile
-          Solution Application and using the same number or alternative number
-          for Mobile Solution App Account. He can see order status, order
-          details, order images.
-        </Text>
-        <TextInput
-          value={deviceWarranty}
-          onChangeText={setDeviceWarranty}
-          style={[styles.input, { height: 50 }]} // Adjust height for multiline
-          placeholder="Device Warranty"
-          multiline
-        />
-
-        <View style={{ marginBottom: 30 }} />
-      </ScrollView>
-
-      {/* Footer */}
-      {!isKeyboardVisible && (
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
-
-          <View style={styles.horizontalButtons}>
-            <TouchableOpacity
-              style={styles.horizontalButton}
-              onPress={handleCall}
-            >
-              <Text style={styles.buttonText}>
-                <Icon name="call" size={25} color="#ffffff" />
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.horizontalButton}
-              onPress={handleMessage}
-            >
-              <Text style={styles.buttonText}>
-                <Icon name="chatbox-ellipses" size={25} color="#ffffff" />
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.horizontalButton}
-              onPress={handleWhatsApp}
-            >
-              <Text style={styles.buttonText}>
-                <Icon name="logo-whatsapp" size={25} color="#ffffff" />
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.horizontalButton}
-              onPress={handlePrint}
-            >
-              <Text style={styles.buttonText}>
-                <Icon name="print" size={25} color="#ffffff" />
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
+        )}
+      </View>
 
       {/* Toast component */}
       <Toast message={toastMessage} visible={toastVisible} type={toastType} />
