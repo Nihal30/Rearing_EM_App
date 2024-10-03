@@ -69,6 +69,7 @@ const NewRecord = () => {
   const [selectedLocation, setSelectedLocation] = useState("inHouse"); // Default selection
   const [serviceCenterName, setServiceCenterName] = useState("");
   const [contactNo, setContactNo] = useState("");
+  const [contactNoError, setContactNoError] = useState(false);
 
   const [barcode, setBarcode] = useState("");
   const [isScannerVisible, setScannerVisible] = useState(false);
@@ -1015,11 +1016,19 @@ const NewRecord = () => {
                   />
                   <TextInput
                     value={contactNo}
-                    onChangeText={setContactNo}
-                    style={[styles.input, { height: 50, marginTop: 10 }]}
+                    onChangeText={(text) => {
+                      setContactNo(text);
+                      if (text.length !== 10) {
+                        setContactNoError(true); // Set error if not 10 digits
+                      } else {
+                        setContactNoError(false); // Clear error if valid
+                      }
+                    }}
+                    style={[styles.input, { height: 50, marginTop: 10, borderColor:contactNoError ? 'red':'gray'}]}
                     placeholder="Contact No"
                     keyboardType="phone-pad"
                   />
+                  {contactNoError && <Text style={{marginTop:5,marginBottom:10 ,color:"red"}}>Add 10 digit number</Text>}
                   <View
                     style={[
                       styles.buttonContainer,

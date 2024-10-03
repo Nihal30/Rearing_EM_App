@@ -19,11 +19,17 @@ const BottomSheetModal = ({
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
+  const [phoneError, setPhoneError] = useState(false); // New error state
 
   // Handler for the "Add" button
   const handleAddDetails = () => {
     if (customerName.trim() === "" || customerPhone.trim() === "") {
       Alert.alert("Error", "Name and Phone Number are required fields.");
+      return;
+    }
+
+    if (customerPhone.length !== 10) {
+      setPhoneError(true); // Set error state if phone number is not 10 digits
       return;
     }
 
@@ -34,11 +40,12 @@ const BottomSheetModal = ({
     };
 
     setCustomerDetails((prevDetails) => [...prevDetails, newCustomer]);
-    
+
     // Reset input fields
     setCustomerName("");
     setCustomerPhone("");
     setCustomerAddress("");
+    setPhoneError(false); // Reset phone error state
 
     onClose(); // Close the modal after adding
   };
@@ -66,11 +73,18 @@ const BottomSheetModal = ({
           />
           <TextInput
             value={customerPhone}
-            onChangeText={setCustomerPhone}
-            style={styles.input}
+            onChangeText={(text) => {
+              setCustomerPhone(text);
+              if (text.length === 10) {
+                setPhoneError(false); // Reset error when valid
+              }
+            }}
+            style={[styles.input, phoneError && styles.errorInput]} // Apply error style
             placeholder="Customer Phone No"
             keyboardType="phone-pad"
           />
+          {phoneError && <Text style={{marginTop:-10,marginBottom:10 ,color:"red"}}>Add 10 digits number</Text>}
+
           <TextInput
             value={customerAddress}
             onChangeText={setCustomerAddress}
@@ -121,6 +135,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
+  },
+  errorInput: {
+    borderColor: "red", // Red border for error
   },
   addButton: {
     backgroundColor: "#4CAF50",
