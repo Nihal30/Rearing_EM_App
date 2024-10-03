@@ -200,6 +200,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius:15,
+    marginTop:5,
+    marginBottom:5,
+   
     boxShadow:' 0 0 5px rgba(0, 0, 0, 0.2)'
   },
   resultInfo: {
