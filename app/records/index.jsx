@@ -247,7 +247,7 @@ const NewRecord = () => {
   // ----
 
   // Form submit
-  const { formData, setFormData } = useContext(FormDataContext);
+  const { formData, setFormData ,addData, updateData } = useContext(FormDataContext);
 
   const [formDataId, setFormDataId] = useState(null); // State for managing form data ID
 
@@ -269,10 +269,10 @@ const NewRecord = () => {
       !time
     ) {
       console.error(
-        "Order details , customer details , model , Problem , data , time are required."
+        "Order details, customer details, model, problem, date, time are required."
       );
       alert(
-        "Please fill Order details , customer details , model , Problem , data , time are required."
+        "Please fill Order details, customer details, model, problem, date, time are required."
       );
       return; // Exit the function if validation fails
     }
@@ -309,32 +309,24 @@ const NewRecord = () => {
       contactNo: selectedLocation === "serviceCenter" ? contactNo : "",
     };
 
-    await setFormData((prevFormData) => {
-      // Check if OldFormData is defined
-      if (OldFormData) {
-        // Parse OldFormData if it's a string
-        const previousFormData =
-          typeof OldFormData === "string"
-            ? JSON.parse(OldFormData)
-            : OldFormData;
+    // Check if OldFormData is defined
+    if (OldFormData) {
+      // Parse OldFormData if it's a string
+      const previousFormData =
+        typeof OldFormData === "string"
+          ? JSON.parse(OldFormData)
+          : OldFormData;
 
-        // Check if the ID already exists in the formData array
-        const existingIndex = prevFormData.findIndex(
-          (item) => item.id === previousFormData.id
-        );
-
-        if (existingIndex > -1) {
-          // Update existing item if it is found
-          console.log("Updating existing entry with ID:", previousFormData.id);
-          return prevFormData.map((item, index) =>
-            index === existingIndex ? newFormData : item
-          );
-        }
-      }
-      // If OldFormData is undefined or no existing entry is found, add new item
+      // Update existing item if it is found
+      console.log("Updating existing entry with ID:", previousFormData.id);
+      await updateData(previousFormData.id, newFormData);
+    } else {
+      // If OldFormData is undefined, add new item
       console.log("Adding new entry with ID:", newFormData.id);
-      return [...prevFormData, newFormData];
-    });
+      await addData(newFormData);
+    }
+
+    // Navigate to another screen
     router.push("/");
     resetForm();
   };
