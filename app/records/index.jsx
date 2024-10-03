@@ -80,8 +80,17 @@ const NewRecord = () => {
   const [isPowerSelected, setIsPowerSelected] = useState(false); // For Power Adapter
   const [isKeyboardSelected, setIsKeyboardSelected] = useState(false); // For Keyboard/Mouse
   const [isOtherDeviceSelected, setIsOtherDeviceSelected] = useState(false); // For Other Device
+  const [validation, setValidation] = useState({
+    orderError: false,
+    customerError: false,
+    modalError: false,
+    problemError: false,
+    timeError: false,
+    dateError: false,
+  });
+  console.log("validation", validation);
   const [model, setModel] = useState("");
-  const [toast, setToast] = useState({ visible: false, message: '', type: '' });
+  const [toast, setToast] = useState({ visible: false, message: "", type: "" });
 
   const handlePowerSelection = () => {
     setPowerSelected((prev) => !prev);
@@ -276,13 +285,16 @@ const NewRecord = () => {
       !model ||
       !time
     ) {
-      console.error(
-        "Order details, customer details, model, problem, date, time are required."
-      );
-      Alert.alert(
-        "Error",
-        "Please fill Order details, customer details, model, problem, date, time."
-      );
+      const newValidation = {
+        orderError: !value && true,
+        customerError: !customerList.length && true,
+        modalError: !model && true,
+        problemError: !problemList.length && true,
+        timeError: !time && true,
+        dateError: !date && true,
+      };
+
+      setValidation(newValidation);
       return; // Exit the function if validation fails
     }
 
@@ -323,7 +335,9 @@ const NewRecord = () => {
       if (OldFormData) {
         // Parse OldFormData if it's a string
         const previousFormData =
-          typeof OldFormData === "string" ? JSON.parse(OldFormData) : OldFormData;
+          typeof OldFormData === "string"
+            ? JSON.parse(OldFormData)
+            : OldFormData;
 
         // Update existing item if it is found
         console.log("Updating existing entry with ID:", previousFormData.id);
@@ -331,8 +345,8 @@ const NewRecord = () => {
 
         setToast({
           visible: true,
-          message: 'Data updated successfully!',
-          type: 'success',
+          message: "Data updated successfully!",
+          type: "success",
         });
       } else {
         // If OldFormData is undefined, add new item
@@ -341,8 +355,8 @@ const NewRecord = () => {
 
         setToast({
           visible: true,
-          message: 'Data added successfully!',
-          type: 'success',
+          message: "Data added successfully!",
+          type: "success",
         });
       }
 
@@ -352,24 +366,23 @@ const NewRecord = () => {
 
       // Hide the toast after 3 seconds
       setTimeout(() => {
-        setToast({ visible: false, message: '', type: '' });
+        setToast({ visible: false, message: "", type: "" });
       }, 3000);
     } catch (error) {
       console.error("Error saving data", error);
 
       setToast({
         visible: true,
-        message: 'Failed to save data!',
-        type: 'error',
+        message: "Failed to save data!",
+        type: "error",
       });
 
       // Hide the toast after 3 seconds
       setTimeout(() => {
-        setToast({ visible: false, message: '', type: '' });
+        setToast({ visible: false, message: "", type: "" });
       }, 3000);
     }
   };
-
 
   // Function to reset all form values
   const resetForm = () => {
@@ -515,12 +528,12 @@ const NewRecord = () => {
     };
   }, []);
 
-  const [updateCustomer,setUpdateCustomer]=useState(null)
+  const [updateCustomer, setUpdateCustomer] = useState(null);
 
   const openBottomSheetForUpdate = (customer) => {
-    console.log('item customer',customer)
-    setUpdateCustomer(customer)
-  
+    console.log("item customer", customer);
+    setUpdateCustomer(customer);
+
     setBottomSheetVisible(true);
   };
 
@@ -583,14 +596,20 @@ const NewRecord = () => {
             setValue={setValue}
             setItems={setItems}
             placeholder="Select Order"
-            style={styles.picker}
+            style={[styles.picker, validation.orderError && styles.errorInput]}
             dropDownContainerStyle={styles.dropdownContainer}
           />
+          {validation.orderError && (
+            <Text style={{ margin: 10, color: "red" }}>
+              Please select order type
+            </Text>
+          )}
 
           <View
             style={[
               styles.customerDetails,
               { borderRadius: 10, marginTop: 10 },
+              validation.customerError && styles.errorInput,
             ]}
           >
             <Text style={styles.label}>Customer Details</Text>
@@ -678,15 +697,27 @@ const NewRecord = () => {
               </TouchableOpacity>
             </View>
           </View>
+          {validation.customerError && (
+            <Text style={{ margin: 10, color: "red" }}>
+              Please select customer
+            </Text>
+          )}
           <Text style={[styles.label, { marginTop: 10 }]}>Model</Text>
 
           <TextInput
             value={model}
             onChangeText={setModel}
-            style={[styles.input, { height: 50, marginTop: 2 }]} // Adjust height for multiline
+            style={[styles.input, { height: 50, marginTop: 2 },validation.modalError && styles.errorInput]} // Adjust height for multiline
             placeholder="Model"
             multiline
           />
+          {validation.modalError && (
+            <Text style={{ margin: 10, color: "red" }}>
+              Please add model
+            </Text>
+          )}
+
+        
 
           {/* Multiline Input for Problems */}
           <Text style={[styles.label, { marginTop: 10 }]}>Write Problems:</Text>
@@ -757,7 +788,7 @@ const NewRecord = () => {
               <TextInput
                 value={problems}
                 onChangeText={setProblems}
-                style={[styles.input, { width: "75%" }]}
+                style={[styles.input, { width: "75%" } ,validation.problemError && styles.errorInput]}
                 placeholder="Describe problems"
               />
               <TouchableOpacity
@@ -771,6 +802,12 @@ const NewRecord = () => {
               </TouchableOpacity>
             </View>
           </View>
+
+          {validation.problemError && (
+            <Text style={{ margin: 10, color: "red" }}>
+              Please add problems list
+            </Text>
+          )}
 
           {/* Button for Customer KYC */}
           <TouchableOpacity
@@ -1114,14 +1151,16 @@ const NewRecord = () => {
                         { height: "100%", width: 90, borderRadius: 10 },
                       ]}
                     >
-                        <Icon name="call" size={25} color="#ffffff" />
+                      <Icon name="call" size={25} color="#ffffff" />
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={() =>  Linking.openURL(
-                        `whatsapp://send?text=${encodeURIComponent(message)}&phone=${
-                          contactNo
-                        }`
-                      )}
+                      onPress={() =>
+                        Linking.openURL(
+                          `whatsapp://send?text=${encodeURIComponent(
+                            message
+                          )}&phone=${contactNo}`
+                        )
+                      }
                       style={[
                         styles.button,
                         { height: "100%", width: 90, borderRadius: 10 },
@@ -1235,7 +1274,12 @@ const NewRecord = () => {
       </View>
 
       {/* Toast component */}
-      <Toast message={toastMessage} visible={toastVisible} type={toastType} onClose={() => setToastVisible(false)}/>
+      <Toast
+        message={toastMessage}
+        visible={toastVisible}
+        type={toastType}
+        onClose={() => setToastVisible(false)}
+      />
       {/* Select Model Dialog */}
       <SelectModelDialog
         visible={isDialogVisible}
@@ -1282,6 +1326,9 @@ const styles = StyleSheet.create({
   container: {
     // flex: 1,
     display: "none",
+  },
+  errorInput: {
+    borderColor: "red",
   },
   formContainer: {
     flex: 1,
@@ -1357,7 +1404,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafafa",
   },
   dropdownContainer: {
-    width: '100%',
+    width: "100%",
     marginTop: 5, // Adjust the margin to position it just below the picker
   },
   customerDetails: {
