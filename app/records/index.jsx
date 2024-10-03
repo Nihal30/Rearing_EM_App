@@ -600,8 +600,8 @@ const NewRecord = () => {
                 editable={false}
                 value={customerModel}
                 // onChangeText={setCustomerModel}
-                style={styles.input}
-                placeholder="Enter customer model"
+                style={[styles.input,{width:200}]}
+                placeholder="Select customers "
               />
               <TouchableOpacity
                 style={[
