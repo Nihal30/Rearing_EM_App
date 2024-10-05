@@ -11,13 +11,13 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { RadioButton } from "react-native-paper";
 import Entypo from "@expo/vector-icons/Entypo";
-import Foundation from '@expo/vector-icons/Foundation';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-// import { Video } from "expo-av";
-// import Video from "react-native-video";
+import Foundation from "@expo/vector-icons/Foundation";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
-  const [images, setImages] = useState([null, null, null, null]);
+  // Updated the state to hold five images
+  const [images, setImages] = useState([null, null, null, null, null]);
   const [video, setVideo] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [openNote, setOpenNote] = useState(false);
@@ -27,7 +27,7 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
       setImages(
         Array.isArray(customerKyc?.Images)
           ? customerKyc.Images
-          : [null, null, null, null]
+          : [null, null, null, null, null] // Adjusted to five slots
       );
       setVideo(customerKyc?.Video || null);
       setTermsAccepted(customerKyc?.termsAccepted || false);
@@ -80,7 +80,7 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
 
   const handleCancel = () => {
     // Reset all states
-    setImages([null, null, null, null]);
+    setImages([null, null, null, null, null]); // Reset to five slots
     setVideo(null);
     setTermsAccepted(false);
     setOpenNote(false);
@@ -118,7 +118,7 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
                         <View style={{ alignItems: "center" }}>
                           <Entypo name="camera" size={50} color="#566573" />
                           <Text style={styles.buttonText}>
-                            Id Picture {index == 1 ? "Front" : "Back"}
+                            Id Picture {index === 0 ? "Front" : "Back"}
                           </Text>
                         </View>
                       )}
@@ -145,7 +145,7 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
                         <View style={{ alignItems: "center" }}>
                           <Entypo name="camera" size={50} color="#566573" />
                           <Text style={styles.buttonText}>
-                            Device {index == 1 ? "Front" : "Back"}
+                            Device {index === 0 ? "Front" : "Back"}
                           </Text>
                         </View>
                       )}
@@ -153,6 +153,8 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
                   )
                 )}
               </View>
+
+              {/* Third Row with the Fifth Camera Button */}
 
               {/* Video Button or Preview */}
               <View style={styles.row}>
@@ -177,9 +179,34 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
 
                 <TouchableOpacity
                   style={styles.iconButton}
+                  onPress={() => handleImagePick(4)} // Handle the fifth image
+                >
+                  {images[4] ? (
+                    <Image
+                      source={{ uri: images[4].uri }}
+                      style={styles.previewImage}
+                    />
+                  ) : (
+                    <View style={{ alignItems: "center" }}>
+                      <MaterialCommunityIcons
+                        name="barcode-scan"
+                        size={50}
+                        color="#566573"
+                      />
+                      <Text style={styles.buttonText}>Bar Code</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.iconButton}
                   onPress={handleTermsOpen}
                 >
-                  <Foundation name="clipboard-notes" size={50} color="#566573" />
+                  <Foundation
+                    name="clipboard-notes"
+                    size={50}
+                    color="#566573"
+                  />
                   <Text style={styles.buttonText}>Note</Text>
                 </TouchableOpacity>
               </View>
@@ -267,26 +294,32 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonContainer: {
+    flexDirection: "column",
+    alignItems: "center",
     width: "100%",
-    marginBottom: 20,
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
+    width: "100%",
     marginBottom: 10,
   },
   iconButton: {
-    width: "45%",
+    width: 100,
     height: 100,
     justifyContent: "center",
     alignItems: "center",
+    borderColor: "#566573",
+    borderWidth: 1,
     borderRadius: 10,
-    backgroundColor: "#f0f0f0",
   },
   buttonText: {
-    fontSize: 15,
+    marginTop: 5,
+    textAlign: "center",
+    fontSize: 12,
   },
   actionContainer: {
+    marginTop: 15,
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",

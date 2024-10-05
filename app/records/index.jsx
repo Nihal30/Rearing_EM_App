@@ -458,8 +458,6 @@ const NewRecord = () => {
             setModel(previousFormData?.model);
             setPattern(previousFormData?.pattern)
             setLockCode(previousFormData?.lockCode)
-
-
             // Set accessory selections if available
             setIsPowerSelected(previousFormData?.accessories?.isPowerSelected);
             setIsKeyboardSelected(
