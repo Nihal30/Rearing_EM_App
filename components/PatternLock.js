@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,93 +7,116 @@ import {
   StyleSheet,
   Alert,
   Dimensions,
+  Animated,
 } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 
-const CIRCLE_SIZE = 40; // Adjusted size of each dot
-const GRID_SIZE = 3; // 3x3 grid
+const { width } = Dimensions.get('window');
+const CIRCLE_SIZE = 20;
 
-const PatternLock = ({ visible, onClose }) => {
-  const [savedPattern, setSavedPattern] = useState([]);
-  const [currentPattern, setCurrentPattern] = useState([]);
-  const dotPositions = useRef([]); // Holds the positions of dots
+const PatternLock = ({ visible, onClose, pattern = [], setPattern }) => {
+  const fadeAnims = useRef(Array(9).fill().map(() => new Animated.Value(0))).current;
+  const [wasVisible, setWasVisible] = useState(false);
 
-  const handleGesture = ({ nativeEvent }) => {
-    // Check which dot the user is currently touching
-    dotPositions.current.forEach((pos, index) => {
-      if (
-        nativeEvent.x >= pos.x - CIRCLE_SIZE / 2 &&
-        nativeEvent.x <= pos.x + CIRCLE_SIZE / 2 &&
-        nativeEvent.y >= pos.y - CIRCLE_SIZE / 2 &&
-        nativeEvent.y <= pos.y + CIRCLE_SIZE / 2
-      ) {
-        if (!currentPattern.includes(index)) {
-          setCurrentPattern((prevPattern) => [...prevPattern, index]);
-        }
+  useEffect(() => {
+    if (visible) {
+      if (pattern.length > 0) {
+        animatePattern(); // Animate if there is a pattern
+      } else {
+        fadeAnims.forEach((anim) => anim.setValue(0)); // Reset animations if no pattern
       }
+      setWasVisible(true); // Mark that modal was visible
+    } else if (wasVisible) {
+      setWasVisible(false); // Reset wasVisible when modal is closed
+      // Reset animation values when the modal closes
+      fadeAnims.forEach((anim) => anim.setValue(0));
+    }
+  }, [visible, pattern]);
+
+  const animatePattern = () => {
+    console.log("Animating pattern:", pattern);
+
+    // Reset animations first to ensure a fresh start
+    fadeAnims.forEach((anim) => anim.setValue(0));
+
+    // Trigger staggered animations for each item in the pattern
+    const animations = pattern.map((index, i) =>
+      Animated.timing(fadeAnims[index], {
+        toValue: 1,
+        duration: 300,
+        delay: i * 200, // Stagger delay to control order
+        useNativeDriver: false,
+      })
+    );
+
+    // Start the animations in staggered sequence
+    Animated.stagger(200, animations).start(() => {
+      console.log("Animation complete");
     });
   };
 
-  const handleGestureEnd = () => {
-    if (currentPattern.length > 0) {
-      setSavedPattern(currentPattern);
-      Alert.alert('Pattern Saved');
-      onClose();
-    } else {
-      Alert.alert('Please enter a pattern');
+  const handleCirclePress = (index) => {
+    if (!pattern.includes(index)) {
+      setPattern([...pattern, index]);
     }
-    setCurrentPattern([]);
   };
 
-  const handleClearPattern = () => {
-    setSavedPattern([]);
-    Alert.alert('Pattern Cleared');
+  const handleReset = () => {
+    setPattern([]);
+    fadeAnims.forEach((anim) => anim.setValue(0)); // Reset animation
+  };
+
+  const handleSubmit = () => {
+    if (pattern.length < 3) {
+      Alert.alert('Error', 'Please enter at least 3 values in the pattern.');
+    } else {
+      Alert.alert('Pattern Entered', `Your pattern is: ${pattern.join('-')}`);
+      onClose();
+    }
   };
 
   return (
     <Modal transparent={true} visible={visible} animationType="slide">
-      <View style={styles.modalBackground}>
-        <View style={styles.dialogBox}>
-          <Text style={styles.dialogTitle}>Draw Your Pattern</Text>
+      <View style={styles.modalContainer}>
+        <View style={styles.patternContainer}>
+          {[...Array(9)].map((_, index) => {
+            const animatedStyle = {
+              opacity: fadeAnims[index],
+              transform: [
+                {
+                  scale: fadeAnims[index].interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 1.5],
+                  }),
+                },
+              ],
+            };
 
-          <PanGestureHandler onGestureEvent={handleGesture} onEnded={handleGestureEnd}>
-            <View style={styles.grid}>
-              {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, index) => (
-                <View
-                  key={index}
-                  onLayout={(event) => {
-                    const layout = event.nativeEvent.layout;
-                    dotPositions.current[index] = {
-                      x: layout.x + CIRCLE_SIZE / 2,
-                      y: layout.y + CIRCLE_SIZE / 2,
-                    };
-                  }}
-                  style={[
-                    styles.circle,
-                    currentPattern.includes(index) && styles.activeCircle,
-                  ]}
+            // Determine the color based on selection
+            const circleColor = pattern.includes(index) ? '#7393B3' : '#D3D3D3';
+
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[styles.circle, { backgroundColor: circleColor }]}
+                onPress={() => handleCirclePress(index)}
+              >
+                <Animated.View
+                  style={[styles.animatedCircle, animatedStyle]}
                 />
-              ))}
-            </View>
-          </PanGestureHandler>
-
-          <TouchableOpacity style={styles.saveButton} onPress={handleGestureEnd}>
-            <Text style={styles.buttonText}>Save</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleReset}>
+            <Text style={styles.buttonText}>Reset</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.clearButton} onPress={handleClearPattern}>
-            <Text style={styles.buttonText}>Clear Pattern</Text>
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>Submit</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.doneButton} onPress={onClose}>
-            <Text style={styles.buttonText}>Done</Text>
+          <TouchableOpacity style={styles.button} onPress={onClose}>
+            <Text style={styles.buttonText}>Close</Text>
           </TouchableOpacity>
-
-          {savedPattern.length > 0 && (
-            <View style={styles.savedPatternContainer}>
-              <Text style={styles.savedPatternText}>Saved Pattern: {savedPattern.join(', ')}</Text>
-            </View>
-          )}
         </View>
       </View>
     </Modal>
@@ -101,72 +124,51 @@ const PatternLock = ({ visible, onClose }) => {
 };
 
 const styles = StyleSheet.create({
-  modalBackground: {
+  modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Dimmed background
+    
+    backgroundColor: 'white',
   },
-  dialogBox: {
-    width: '90%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  dialogTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  grid: {
-    width: CIRCLE_SIZE * GRID_SIZE + 40,
-    height: CIRCLE_SIZE * GRID_SIZE + 40,
+  patternContainer: {
+    width: width -100,
+    height: width - 100,
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: 20,
   },
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
-    backgroundColor: '#ccc',
+    margin: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  animatedCircle: {
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
     borderRadius: CIRCLE_SIZE / 2,
-    margin: 15, // Adjusted margin to match spacing in the image
+    position: 'absolute',
+    backgroundColor: '#DE3163', // Add background color for visibility
+    borderWidth: 2,
+    borderColor: '#DE3163',
   },
-  activeCircle: {
-    backgroundColor: '#007BFF',
-  },
-  saveButton: {
-    marginTop: 20,
-    backgroundColor: '#FF0055', // Pinkish red color for the save button
-    padding: 15,
-    borderRadius: 25, // Rounded save button
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     width: '80%',
-    alignItems: 'center',
   },
-  clearButton: {
-    marginTop: 20,
-    backgroundColor: '#FF0000',
+  button: {
     padding: 10,
+    backgroundColor: '#DE3163',
     borderRadius: 5,
-    alignItems: 'center',
-  },
-  doneButton: {
-    marginTop: 10,
-    backgroundColor: '#28A745',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
+    marginHorizontal: 10,
   },
   buttonText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-  },
-  savedPatternContainer: {
-    marginTop: 10,
-  },
-  savedPatternText: {
+    color: '#fff',
     fontWeight: 'bold',
   },
 });
