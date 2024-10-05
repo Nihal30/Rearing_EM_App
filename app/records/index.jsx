@@ -845,7 +845,7 @@ const NewRecord = () => {
             style={[styles.button, { marginTop: 15 }]}
             onPress={() => setKycVisible(true)}
           >
-            <Text style={styles.buttonText}>Customer KYC</Text>
+            <Text style={styles.buttonText}>Model Details</Text>
           </TouchableOpacity>
 
           {/* Price and Paid Inputs */}

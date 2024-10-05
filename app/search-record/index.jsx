@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Image,
   Alert,
+  Switch,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -14,53 +15,54 @@ import { useRouter } from "expo-router";
 import { FormDataContext } from "../../hooks/FormDataConextApi";
 import NoData from "../../assets/images/noData.jpg";
 import Toast from "../../components/Toast";
+import RNPickerSelect from "react-native-picker-select";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
+import { Button } from "react-native-paper";
 
 const SearchRecord = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState(null);
   const { formData, deleteData } = useContext(FormDataContext);
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState(formData);
   const [toast, setToast] = useState({ visible: false, message: "", type: "" });
 
+  const [orderType, setOrderType] = useState(null); // Initially null for 'All'
+  const [isService, setIsService] = useState(false);
+
   useEffect(() => {
-    setData(formData);
-    setFilteredData(formData); // Initialize with all data
+    setFilteredData(formData); // Display all data initially
   }, [formData]);
 
-  // Filter the data based on the search text and selected status
+  // Function to handle filtering based on search text, order type, and service
   const handleSearch = () => {
-    const filtered = selectedStatus
-      ? data.filter((item) => {
-          const matchesSearchText =
-            item.orderDetails
-              .toLowerCase()
-              .includes(searchText.toLowerCase()) ||
-            item.customerDetails?.customerList[0]?.name
-              .toLowerCase()
-              .includes(searchText.toLowerCase()) ||
-            false;
+    const filtered = formData.filter((item) => {
+      const matchesSearchText =
+        item.orderDetails.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.customerDetails?.customerList[0]?.name
+          .toLowerCase()
+          .includes(searchText.toLowerCase()) ||
+        false;
 
-          return matchesSearchText && item.orderDetails === selectedStatus;
-        })
-      : data.filter((item) => {
-          const matchesSearchText =
-            item.orderDetails
-              .toLowerCase()
-              .includes(searchText.toLowerCase()) ||
-            item.customerDetails?.customerList[0]?.name
-              .toLowerCase()
-              .includes(searchText.toLowerCase()) ||
-            false;
+      const matchesOrderType = orderType
+        ? item.orderDetails === orderType
+        : true; // If orderType is null, show all records
 
-          return matchesSearchText;
-        });
+      const matchesService = isService
+        ? item.isService === isService // Assuming you have an 'isService' field in your data
+        : true; // If isService is false, don't filter by this
+
+      return matchesSearchText && matchesOrderType && matchesService;
+    });
 
     setFilteredData(filtered);
   };
 
-  // Function to get background color based on order status
+  useEffect(() => {
+    handleSearch();
+  }, [orderType, isService]);
+
+  // Function to get styles for different order statuses
   const getOrderStatusStyle = (status) => {
     switch (status) {
       case "Pending":
@@ -72,10 +74,11 @@ const SearchRecord = () => {
       case "Canceled":
         return styles.canceledStatus;
       default:
-        return styles.defaultStatus; // Optional: Style for unknown status
+        return {}; // Return empty object if no match is found
     }
   };
 
+  // Function to handle deletion of a record
   const handleDelete = (id) => {
     Alert.alert(
       "Delete Record",
@@ -116,6 +119,7 @@ const SearchRecord = () => {
       { cancelable: true }
     );
   };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
@@ -167,21 +171,49 @@ const SearchRecord = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Order Status Buttons */}
+      {/* Filters */}
+      <View
+        style={{
+          flexDirection: "column",
+          flexDirection: "row",
+          justifyContent: "space-around",
+        }}
+      >
+        <View style={{ borderWidth: 1, borderRadius: 10, width: 150 }}>
+          <RNPickerSelect
+            onValueChange={(value) => setOrderType(value)}
+            items={[
+              { label: "All", value: null },
+              { label: "Pending", value: "Pending" },
+              { label: "Repaired", value: "Repaired" },
+              { label: "Delivered", value: "Delivered" },
+              { label: "Canceled", value: "Canceled" },
+            ]}
+            placeholder={{ label: "Select Order Type", value: null }}
+          />
+        </View>
+
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+            gap: 10,
+          }}
+        >
+          <Text style={{ fontSize: 16 }}>Service</Text>
+          <Switch
+            value={isService}
+            onValueChange={(value) => setIsService(value)}
+          />
+        </View>
+      </View>
+
+      {/* Filter Button */}
       {/* <View style={styles.buttonContainer}>
-        {["Pending", "Repaired", "Delivered", "Canceled"].map((status) => (
-          <TouchableOpacity
-            key={status}
-            style={[styles.statusButton, selectedStatus === status && styles.selectedButton]}
-            onPress={() => {
-              const newStatus = selectedStatus === status ? null : status;
-              setSelectedStatus(newStatus);
-              handleSearch(); // Reapply the search with the new status
-            }}
-          >
-            <Text style={styles.buttonText}>{status}</Text>
-          </TouchableOpacity>
-        ))}
+        <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
+          <Text style={styles.buttonText}>Apply Filter</Text>
+        </TouchableOpacity>
       </View> */}
 
       {/* List of Items */}
@@ -250,59 +282,25 @@ const SearchRecord = () => {
                       <View style={styles.titleValueContainer}>
                         <Text style={styles.titleText}>Customer Name:</Text>
                         <Text style={styles.valueText}>
-                          {item.customerDetails.customerList[0]?.name || "N/A"}
-                        </Text>
-                      </View>
-                      <View style={styles.titleValueContainer}>
-                        <Text style={styles.titleText}>Customer Phone:</Text>
-                        <Text style={styles.valueText}>
-                          {item.customerDetails.customerList[0]?.phone || "N/A"}
+                          {item.customerDetails.customerList[0].name}
                         </Text>
                       </View>
                     </View>
                   )}
-
-                  <View style={styles.titleValueContainer}>
-                    <Text style={styles.titleText}>Model:</Text>
-                    <Text style={styles.valueText}>{item?.model}</Text>
-                  </View>
-                  {item?.problems?.length > 0 && (
-                    <View style={styles.titleValueContainer}>
-                      <Text style={styles.titleText}>Issues:</Text>
-                      <Text style={styles.valueText}>
-                        {item.problems.map((problem, index) => (
-                          <Text key={index}>
-                            {problem.text || "N/A"}
-                            {index < item.problems.length - 1 ? ", " : ""}
-                          </Text>
-                        ))}
-                      </Text>
-                    </View>
-                  )}
-                  <View style={styles.titleValueContainer}>
-                    <Text style={styles.titleText}>Date:</Text>
-                    <Text style={styles.valueText}>
-                      {new Date(item.date).toLocaleDateString() || "N/A"}
-                    </Text>
-                  </View>
-                  <View style={styles.titleValueContainer}>
-                    <Text style={styles.titleText}>Time:</Text>
-                    <Text style={styles.valueText}>
-                      {new Date(item.time).toLocaleTimeString() || "N/A"}
-                    </Text>
-                  </View>
                 </View>
               </TouchableOpacity>
             )}
           />
         )}
       </View>
-      <Toast
-        message={toast.message}
-        visible={toast?.visible}
-        type={toast.type}
-        onClose={() => setToastVisible(false)}
-      />
+
+      {toast.visible && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          visible={toast.visible}
+        />
+      )}
     </View>
   );
 };
@@ -317,6 +315,18 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     paddingHorizontal: 10,
     marginHorizontal: 10,
+  },
+  filtersContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  filterItem: {
+    flex: 1,
+    marginHorizontal: 5,
+    height: 40,
+    justifyContent: "center",
   },
   searchIcon: {
     marginRight: 10,
