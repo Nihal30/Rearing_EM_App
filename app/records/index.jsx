@@ -40,6 +40,7 @@ const NewRecord = () => {
   const [price, setPrice] = useState("");
   const [paid, setPaid] = useState("");
   const [lockCode, setLockCode] = useState("");
+  const [pattern, setPattern] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(null);
   const [showTimePicker, setShowTimePicker] = useState(null);
   const [date, setDate] = useState(new Date());
@@ -124,13 +125,13 @@ const NewRecord = () => {
   // edit the form
   const { OldFormData } = useLocalSearchParams();
 
-  // const handleOpenPatternLock = () => {
-  //   setIsPatternModalVisible(true);
-  // };
+  const handleOpenPatternLock = () => {
+    setIsPatternModalVisible(true);
+  };
 
-  // const handleClosePatternLock = () => {
-  //   setIsPatternModalVisible(false);
-  // };
+  const handleClosePatternLock = () => {
+    setIsPatternModalVisible(false);
+  };
 
   const handleScan = (data) => {
     setBarcode(data); // Set the scanned data in the input
@@ -144,7 +145,7 @@ const NewRecord = () => {
 
   const openBottomSheet = () => {
     setBottomSheetVisible(true);
-    setUpdateCustomer(null)
+    setUpdateCustomer(null);
   };
 
   const closeBottomSheet = () => {
@@ -323,6 +324,7 @@ const NewRecord = () => {
       customerKyc: customerKyc,
       model: model,
       selectedLocation: selectedLocation,
+      pattern:pattern,
       accessories: {
         isPowerSelected: isPowerSelected,
         isKeyboardSelected: isKeyboardSelected,
@@ -454,6 +456,9 @@ const NewRecord = () => {
             setBarcode(previousFormData?.barcode);
             setCustomerKyc(previousFormData?.customerKyc);
             setModel(previousFormData?.model);
+            setPattern(previousFormData?.pattern)
+            setLockCode(previousFormData?.lockCode)
+
 
             // Set accessory selections if available
             setIsPowerSelected(previousFormData?.accessories?.isPowerSelected);
@@ -530,7 +535,6 @@ const NewRecord = () => {
       keyboardDidShowListener.remove();
     };
   }, []);
-
 
   const openBottomSheetForUpdate = (customer) => {
     console.log("item customer", customer);
@@ -709,17 +713,17 @@ const NewRecord = () => {
           <TextInput
             value={model}
             onChangeText={setModel}
-            style={[styles.input, { height: 50, marginTop: 2 },validation.modalError && styles.errorInput]} // Adjust height for multiline
+            style={[
+              styles.input,
+              { height: 50, marginTop: 2 },
+              validation.modalError && styles.errorInput,
+            ]} // Adjust height for multiline
             placeholder="Model"
             multiline
           />
           {validation.modalError && (
-            <Text style={{ margin: 10, color: "red" }}>
-              Please add model
-            </Text>
+            <Text style={{ margin: 10, color: "red" }}>Please add model</Text>
           )}
-
-        
 
           {/* Multiline Input for Problems */}
           <Text style={[styles.label, { marginTop: 10 }]}>Write Problems:</Text>
@@ -790,7 +794,11 @@ const NewRecord = () => {
               <TextInput
                 value={problems}
                 onChangeText={setProblems}
-                style={[styles.input, { width: "75%" } ,validation.problemError && styles.errorInput]}
+                style={[
+                  styles.input,
+                  { width: "75%" },
+                  validation.problemError && styles.errorInput,
+                ]}
                 placeholder="Describe problems"
               />
               <TouchableOpacity
@@ -839,25 +847,25 @@ const NewRecord = () => {
           />
 
           {/* Lock Code Input */}
-          {/* <Text style={[styles.label, { marginTop: 10 }]}>Lock Code:</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <TextInput
-            value={lockCode}
-            onChangeText={setLockCode}
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Enter lock code"
-          />
-          <TouchableOpacity
-            style={[
-              styles.button,
-              { alignItems: "center", justifyContent: "center", height: 50 },
-            ]}
-          >
-            <Text style={styles.buttonText} onPress={handleOpenPatternLock}>
-              Submit
-            </Text>
-          </TouchableOpacity>
-        </View> */}
+          <Text style={[styles.label, { marginTop: 10 }]}>Lock Code:</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <TextInput
+              value={lockCode}
+              onChangeText={setLockCode}
+              style={[styles.input, { flex: 1 }]}
+              placeholder="Enter lock code"
+            />
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { alignItems: "center", justifyContent: "center", height: 50 },
+              ]}
+            >
+              <Text style={styles.buttonText} onPress={handleOpenPatternLock}>
+                Pattern
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Date Picker */}
           <Text style={[styles.label, { marginTop: 10 }]}>Select Date:</Text>
@@ -1317,10 +1325,12 @@ const NewRecord = () => {
       )}
 
       {/* Pattern Lock Modal */}
-      {/* <PatternLock
+      <PatternLock
         visible={isPatternModalVisible}
         onClose={handleClosePatternLock}
-      /> */}
+        pattern={pattern}
+        setPattern={setPattern}
+      />
     </View>
   );
 };
