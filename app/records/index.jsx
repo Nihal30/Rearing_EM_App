@@ -88,7 +88,9 @@ const NewRecord = () => {
     timeError: false,
     dateError: false,
   });
-  console.log("validation", validation);
+  const [updateCustomer, setUpdateCustomer] = useState(null);
+
+  // console.log("validation", validation);
   const [model, setModel] = useState("");
   const [toast, setToast] = useState({ visible: false, message: "", type: "" });
 
@@ -142,6 +144,7 @@ const NewRecord = () => {
 
   const openBottomSheet = () => {
     setBottomSheetVisible(true);
+    setUpdateCustomer(null)
   };
 
   const closeBottomSheet = () => {
@@ -528,7 +531,6 @@ const NewRecord = () => {
     };
   }, []);
 
-  const [updateCustomer, setUpdateCustomer] = useState(null);
 
   const openBottomSheetForUpdate = (customer) => {
     console.log("item customer", customer);
@@ -1297,6 +1299,7 @@ const NewRecord = () => {
         onAddCustomer={handleAddCustomer}
         setCustomerDetails={setCustomerDetails}
         updateCustomer={updateCustomer}
+        setCustomerList={setCustomerList}
       />
 
       <CustomerKyc

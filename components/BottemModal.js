@@ -17,6 +17,7 @@ const BottomSheetModal = ({
   headerText,
   setCustomerDetails,
   updateCustomer,
+  setCustomerList
 }) => {
   // State for customer details
   const [customerId, setCustomerId] = useState("");
@@ -26,7 +27,14 @@ const BottomSheetModal = ({
   const [phoneError, setPhoneError] = useState(false);
   const isUpdate = updateCustomer !== null;
   const [toast, setToast] = useState({ visible: false, message: "", type: "" });
-
+  // Reset input fields
+  const resetFields = () => {
+    setCustomerId("");
+    setCustomerName("");
+    setCustomerPhone("");
+    setCustomerAddress("");
+    setPhoneError(false);
+  };
 
   // Effect to set initial customer data when updating
   useEffect(() => {
@@ -68,6 +76,7 @@ const BottomSheetModal = ({
         existingCustomers = existingCustomers.map((customer) =>
           customer.id === customerId ? newCustomer : customer
         );
+        setCustomerList(existingCustomers)
       } else {
         // Add new customer
         existingCustomers.push(newCustomer);
@@ -108,14 +117,7 @@ const BottomSheetModal = ({
   };
 
 
-  // Reset input fields
-  const resetFields = () => {
-    setCustomerId("");
-    setCustomerName("");
-    setCustomerPhone("");
-    setCustomerAddress("");
-    setPhoneError(false);
-  };
+
 
   return (
     <Modal
