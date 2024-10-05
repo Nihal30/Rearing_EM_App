@@ -45,6 +45,8 @@ const NewRecord = () => {
   const [showTimePicker, setShowTimePicker] = useState(null);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
+  const [dateService, setDateService] = useState(new Date());
+  const [timeService, setTimeService] = useState(new Date());
   const [isYesSelected, setIsYesSelected] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -171,6 +173,18 @@ const NewRecord = () => {
     const currentTime = selectedTime || time;
     setShowTimePicker(false);
     setTime(currentTime);
+  };
+
+  const onDateChangeService = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShowDatePicker(false);
+    setDateService(currentDate);
+  };
+
+  const onTimeChangeService = (event, selectedTime) => {
+    const currentTime = selectedTime;
+    setShowDatePicker(false);
+    setTimeService(currentTime);
   };
 
   // footer function ---
@@ -324,7 +338,7 @@ const NewRecord = () => {
       customerKyc: customerKyc,
       model: model,
       selectedLocation: selectedLocation,
-      pattern:pattern,
+      pattern: pattern,
       accessories: {
         isPowerSelected: isPowerSelected,
         isKeyboardSelected: isKeyboardSelected,
@@ -333,6 +347,10 @@ const NewRecord = () => {
       serviceCenterName:
         selectedLocation === "serviceCenter" ? serviceCenterName : "",
       contactNo: selectedLocation === "serviceCenter" ? contactNo : "",
+      serviceDate:dateService,
+      serviceTime:timeService
+
+
     };
 
     try {
@@ -456,8 +474,8 @@ const NewRecord = () => {
             setBarcode(previousFormData?.barcode);
             setCustomerKyc(previousFormData?.customerKyc);
             setModel(previousFormData?.model);
-            setPattern(previousFormData?.pattern)
-            setLockCode(previousFormData?.lockCode)
+            setPattern(previousFormData?.pattern);
+            setLockCode(previousFormData?.lockCode);
             // Set accessory selections if available
             setIsPowerSelected(previousFormData?.accessories?.isPowerSelected);
             setIsKeyboardSelected(
@@ -468,12 +486,17 @@ const NewRecord = () => {
             );
             setSelectedLocation(previousFormData.selectedLocation);
 
+
             // Check the selected location
             const location = previousFormData.selectedLocation; // Get selectedLocation
             if (location === "serviceCenter") {
               // Set contact number correctly
               setContactNo(previousFormData?.contactNo || "");
               setServiceCenterName(previousFormData?.serviceCenterName || "");
+              console.log('previousFormData?.serviceDate', previousFormData?.serviceDate)
+              setTimeService(previousFormData?.serviceTime || new Date())
+              setDateService(previousFormData?.serviceDate || new Date())
+
             } else if (location === "inHouse") {
               // Optionally clear service center details if inHouse is selected
               setContactNo("");
@@ -1133,6 +1156,103 @@ const NewRecord = () => {
                     placeholder="Contact No"
                     keyboardType="phone-pad"
                   />
+
+                  {/* Date Picker */}
+                  <Text style={[styles.label, { marginTop: 10 }]}>
+                    Select Date:
+                  </Text>
+                  {dateService && (
+                    <View
+                      style={{
+                        backgroundColor: "#ffffff",
+                        padding: 10,
+                        margin: 10,
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text style={{ fontFamily: "outfit-medium" }}>
+                        Date:{" "}
+                        {dateService
+                          ? moment(dateService).format("DD MMM YYYY")
+                          : ""}
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: "#D3D3D3",
+                          padding: 2,
+                          borderRadius: 30,
+                        }}
+                        onPress={() => dateService(new Date())}
+                      >
+                        {/* <MaterialIcons name="close" size={24} color="red" /> */}
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  <TouchableOpacity
+                    onPress={() => setShowDatePicker(true)}
+                    style={styles.button}
+                  >
+                    <Text style={styles.buttonText}>Show Date Picker</Text>
+                  </TouchableOpacity>
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={dateService}
+                      mode="date"
+                      display="default"
+                      onChange={onDateChangeService}
+                    />
+                  )}
+
+                  {/* Time Picker */}
+                  <Text style={styles.label}>Select Repair Time:</Text>
+                  {timeService && (
+                    <View
+                      style={{
+                        backgroundColor: "#ffffff",
+                        padding: 10,
+                        margin: 10,
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text style={{ fontFamily: "outfit-medium" }}>
+                        Time:{" "}
+                        {timeService ? moment(timeService).format("HH:mm") : ""}
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: "#D3D3D3",
+                          padding: 2,
+                          borderRadius: 30,
+                        }}
+                        onPress={() => setTimeService(new Date())}
+                      >
+                        {/* <MaterialIcons name="close" size={24} color="red" /> */}
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  <TouchableOpacity
+                    onPress={() => setShowTimePicker(true)}
+                    style={styles.button}
+                  >
+                    <Text style={styles.buttonText}>Show Time Picker</Text>
+                  </TouchableOpacity>
+                  {showTimePicker && (
+                    <DateTimePicker
+                      value={timeService}
+                      mode="time"
+                      display="default"
+                      onChange={onTimeChangeService}
+                    />
+                  )}
+
                   {contactNoError && (
                     <Text
                       style={{ marginTop: 5, marginBottom: 10, color: "red" }}
