@@ -69,12 +69,12 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
 
   const handleDone = () => {
     if (termsAccepted) {
-      console.log("Images:", images);
-      console.log("Video:", video);
+      // console.log("Images:", images);
+      // console.log("Video:", video);
       setCustomerKyc({ Images: images, Video: "", Terms: termsAccepted });
       onClose();
     } else {
-      Alert.alert("Error", "You must accept the terms and conditions.");
+      setOpenNote(true);
     }
   };
 
@@ -118,7 +118,7 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
                         <View style={{ alignItems: "center" }}>
                           <Entypo name="camera" size={50} color="#566573" />
                           <Text style={styles.buttonText}>
-                            Id Picture {index === 0 ? "Front" : "Back"}
+                            Device {index === 0 ? "Front" : "Back"}
                           </Text>
                         </View>
                       )}
@@ -144,9 +144,7 @@ const CustomerKyc = ({ visible, onClose, customerKyc, setCustomerKyc }) => {
                       ) : (
                         <View style={{ alignItems: "center" }}>
                           <Entypo name="camera" size={50} color="#566573" />
-                          <Text style={styles.buttonText}>
-                            Device {index === 0 ? "Front" : "Back"}
-                          </Text>
+                          <Text style={styles.buttonText}>Device</Text>
                         </View>
                       )}
                     </TouchableOpacity>
