@@ -297,6 +297,8 @@ const NewRecord = () => {
 
   const handleSubmit = async () => {
     // Validation: Check for required fields
+    const currentDate = new Date();
+  const currentDateString = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
     if (
       !value ||
       !customerList.length ||
@@ -320,6 +322,7 @@ const NewRecord = () => {
 
     const newFormData = {
       id: formDataId || generateCustomId(), // Use existing ID if available, otherwise generate a new one
+      currentDate:currentDateString,
       orderDetails: value,
       customerDetails: {
         customerList: customerList,
