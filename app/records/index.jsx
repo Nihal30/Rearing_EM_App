@@ -9,6 +9,7 @@ import {
   Button,
   KeyboardAvoidingView,
   Keyboard,
+  Modal,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -32,6 +33,7 @@ import { FormDataContext } from "../../hooks/FormDataConextApi";
 import Checkbox from "expo-checkbox";
 import { MaterialIcons } from "@expo/vector-icons";
 import { v4 as uuidv4 } from "uuid";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const NewRecord = () => {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState("");
@@ -347,10 +349,8 @@ const NewRecord = () => {
       serviceCenterName:
         selectedLocation === "serviceCenter" ? serviceCenterName : "",
       contactNo: selectedLocation === "serviceCenter" ? contactNo : "",
-      serviceDate:dateService,
-      serviceTime:timeService
-
-
+      serviceDate: dateService,
+      serviceTime: timeService,
     };
 
     try {
@@ -486,17 +486,18 @@ const NewRecord = () => {
             );
             setSelectedLocation(previousFormData.selectedLocation);
 
-
             // Check the selected location
             const location = previousFormData.selectedLocation; // Get selectedLocation
             if (location === "serviceCenter") {
               // Set contact number correctly
               setContactNo(previousFormData?.contactNo || "");
               setServiceCenterName(previousFormData?.serviceCenterName || "");
-              console.log('previousFormData?.serviceDate', previousFormData?.serviceDate)
-              setTimeService(previousFormData?.serviceTime || new Date())
-              setDateService(previousFormData?.serviceDate || new Date())
-
+              console.log(
+                "previousFormData?.serviceDate",
+                previousFormData?.serviceDate
+              );
+              setTimeService(previousFormData?.serviceTime || new Date());
+              setDateService(previousFormData?.serviceDate || new Date());
             } else if (location === "inHouse") {
               // Optionally clear service center details if inHouse is selected
               setContactNo("");
@@ -562,6 +563,25 @@ const NewRecord = () => {
     setUpdateCustomer(customer);
 
     setBottomSheetVisible(true);
+  };
+
+  const [searchText, setSearchText] = useState("");
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
+
+  const handleSearchCustomers = async (text) => {
+    setSearchText(text);
+    const data = await AsyncStorage.getItem("customerDetails");
+    const customerData = JSON.parse(data);
+    if (text.length > 0 && customerData) {
+      const filteredData = customerData.filter(
+        (customer) =>
+          customer.name.toLowerCase().includes(text.toLowerCase()) ||
+          customer.phone.includes(text)
+      );
+      setFilteredCustomers(filteredData);
+    } else {
+      setFilteredCustomers([]);
+    }
   };
 
   return (
@@ -693,20 +713,70 @@ const NewRecord = () => {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
+                zIndex:10
               }}
             >
               {/* Customer Details */}
-              <TextInput
-                editable={false}
-                value={customerModel}
-                // onChangeText={setCustomerModel}
-                style={[styles.input, { width: 190 }]}
-                placeholder="Select customers "
-              />
+              <View style={{ position: "relative" ,zIndex:100}}>
+                <TextInput
+                  value={searchText}
+                  onChangeText={handleSearchCustomers}
+                  style={[styles.input, { width: 190 }]}
+                  placeholder="Select customers"
+                />
+                {filteredCustomers.length > 0 && (
+                  <View
+                    style={{
+                      borderRadius: 10,
+                      borderWidth: 1,
+                      padding: 10,
+                      marginTop: 2,
+                      position: "absolute",
+                      top: 50, // Adjusted to position just below the text input
+                      left: 0,
+                      right: 0,
+                      width: 200, // Set the width to 200
+                      alignSelf: "center", // Center the modal
+                      backgroundColor: "white",
+                      zIndex: 1000,
+                      elevation: 5, // Adds shadow for better visibility on Android
+                    }}
+                  >
+                    <FlatList
+                      data={filteredCustomers}
+                      keyExtractor={(item) => item.id}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          style={{
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginVertical: 5,
+                            backgroundColor: "#E5E4E2",
+                            padding: 10,
+                            borderRadius: 10,
+                          }}
+                          onPress={() => {
+                            onSelectModel(item);
+                            handleSearchCustomers("");
+                          }}
+                        >
+                          <Text style={styles.item}>
+                            {item.name} / {item.phone}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      style={{
+                        backgroundColor: "white", // Ensure background is opaque
+                      }}
+                    />
+                  </View>
+                )}
+              </View>
+
               <TouchableOpacity
                 style={[
                   styles.button,
-                  { height: "100%", width: 70, borderRadius: 10 },
+                  { height: 50, width: 70, borderRadius: 10 },
                 ]}
                 onPress={openDialog}
               >
@@ -716,7 +786,7 @@ const NewRecord = () => {
               <TouchableOpacity
                 style={[
                   styles.button,
-                  { height: "100%", width: 70, borderRadius: 10 },
+                  { height: 50, width: 70, borderRadius: 10 },
                 ]}
                 onPress={openBottomSheet}
               >
