@@ -57,7 +57,9 @@ const SearchRecord = () => {
         ? item.date?.split("T")[0] === today // Check if order date matches today's date
         : true; // If 'Today' filter is active, check if date matches
 
-      return matchesSearchText && matchesOrderType && matchesService && matchesToday;
+      return (
+        matchesSearchText && matchesOrderType && matchesService && matchesToday
+      );
     });
 
     setFilteredData(filtered);
@@ -215,6 +217,7 @@ const SearchRecord = () => {
 
         <Button
           style={{ backgroundColor: isTodayFilter ? "#DE3163" : "#E5E4E2" }} // Highlight if active
+          textColor={isTodayFilter ? "white" : "black"}
           onPress={() => {
             setIsTodayFilter((prev) => !prev); // Toggle the 'Today' filter
             handleSearch(); // Reapply the search filter
@@ -309,7 +312,11 @@ const SearchRecord = () => {
       </View>
 
       {toast.visible && (
-        <Toast message={toast.message} type={toast.type} visible={toast.visible} />
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          visible={toast.visible}
+        />
       )}
     </View>
   );
@@ -369,7 +376,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginVertical: 10,
-    marginHorizontal:10,
+    marginHorizontal: 10,
     // shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
