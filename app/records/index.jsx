@@ -1394,7 +1394,7 @@ const NewRecord = () => {
             multiline
           />
 
-          <Text style={[styles.label, { marginTop: 10 }]}>
+          {/* <Text style={[styles.label, { marginTop: 10 }]}>
             * Enter Profit Amount Below to Calculate Day-Wise
           </Text>
           <TextInput
@@ -1403,7 +1403,7 @@ const NewRecord = () => {
             style={styles.input}
             placeholder="Profit From Order"
             keyboardType="numeric"
-          />
+          /> */}
 
           {/* Device Warranty*/}
           <Text style={[styles.label, { marginTop: 10 }]}>
