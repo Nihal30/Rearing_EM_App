@@ -14,12 +14,12 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="home/index" options={{ headerShown: false }} />
           <Stack.Screen name="records/index" options={{ headerShown: false }} />
           <Stack.Screen
             name="search-record/index"
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="service-operator/index" options={{ headerShown: false }} />
         </Stack>
       </GestureHandlerRootView>
     </FormDataProvider>

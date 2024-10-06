@@ -7,6 +7,7 @@ import {
   Image,
   Alert,
   Switch,
+  ScrollView,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -228,6 +229,7 @@ const SearchRecord = () => {
       </View>
 
       {/* List of Items */}
+      <ScrollView>
       <View style={styles.listContainer}>
         {filteredData.length === 0 ? (
           <View style={styles.noDataContainer}>
@@ -310,6 +312,7 @@ const SearchRecord = () => {
           />
         )}
       </View>
+      </ScrollView>
 
       {toast.visible && (
         <Toast

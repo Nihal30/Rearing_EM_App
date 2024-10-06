@@ -78,6 +78,24 @@ export default function Index() {
         >
           <Text style={{ color: "#ffffff", fontSize: 16 }}>Search Record</Text>
         </TouchableOpacity>
+
+         {/* Search Record Button */}
+         <TouchableOpacity
+        onPress={() => router.push("/service-operator")}
+
+          style={{
+            width: 200,
+            marginTop: 20,
+            backgroundColor: "#DE3163",
+            paddingVertical: 15,
+            paddingHorizontal: 30,
+            borderRadius: 10,
+
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#ffffff", fontSize: 16 }}>Service Operator</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
