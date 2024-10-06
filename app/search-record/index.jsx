@@ -16,8 +16,6 @@ import { FormDataContext } from "../../hooks/FormDataConextApi";
 import NoData from "../../assets/images/noData.jpg";
 import Toast from "../../components/Toast";
 import RNPickerSelect from "react-native-picker-select";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-
 import { Button } from "react-native-paper";
 
 const SearchRecord = () => {
@@ -29,13 +27,16 @@ const SearchRecord = () => {
 
   const [orderType, setOrderType] = useState(null); // Initially null for 'All'
   const [isService, setIsService] = useState(false);
+  const [isTodayFilter, setIsTodayFilter] = useState(false); // State for "Today" filter
 
   useEffect(() => {
     setFilteredData(formData); // Display all data initially
   }, [formData]);
 
-  // Function to handle filtering based on search text, order type, and service
+  // Function to handle filtering based on search text, order type, service, and date
   const handleSearch = () => {
+    const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+
     const filtered = formData.filter((item) => {
       const matchesSearchText =
         item.orderDetails.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -52,7 +53,11 @@ const SearchRecord = () => {
         ? item.isService === isService // Assuming you have an 'isService' field in your data
         : true; // If isService is false, don't filter by this
 
-      return matchesSearchText && matchesOrderType && matchesService;
+      const matchesToday = isTodayFilter
+        ? item.date?.split("T")[0] === today // Check if order date matches today's date
+        : true; // If 'Today' filter is active, check if date matches
+
+      return matchesSearchText && matchesOrderType && matchesService && matchesToday;
     });
 
     setFilteredData(filtered);
@@ -60,7 +65,7 @@ const SearchRecord = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [orderType, isService]);
+  }, [orderType, isService, isTodayFilter]);
 
   // Function to get styles for different order statuses
   const getOrderStatusStyle = (status) => {
@@ -174,9 +179,9 @@ const SearchRecord = () => {
       {/* Filters */}
       <View
         style={{
-          flexDirection: "column",
           flexDirection: "row",
           justifyContent: "space-around",
+          alignItems: "center",
         }}
       >
         <View style={{ borderWidth: 1, borderRadius: 10, width: 150 }}>
@@ -207,14 +212,17 @@ const SearchRecord = () => {
             onValueChange={(value) => setIsService(value)}
           />
         </View>
-      </View>
 
-      {/* Filter Button */}
-      {/* <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
-          <Text style={styles.buttonText}>Apply Filter</Text>
-        </TouchableOpacity>
-      </View> */}
+        <Button
+          style={{ backgroundColor: isTodayFilter ? "#DE3163" : "#E5E4E2" }} // Highlight if active
+          onPress={() => {
+            setIsTodayFilter((prev) => !prev); // Toggle the 'Today' filter
+            handleSearch(); // Reapply the search filter
+          }}
+        >
+          Today
+        </Button>
+      </View>
 
       {/* List of Items */}
       <View style={styles.listContainer}>
@@ -285,6 +293,12 @@ const SearchRecord = () => {
                           {item.customerDetails.customerList[0].name}
                         </Text>
                       </View>
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.titleText}>Email:</Text>
+                        <Text style={styles.valueText}>
+                          {item.customerDetails.customerList[0].email}
+                        </Text>
+                      </View>
                     </View>
                   )}
                 </View>
@@ -295,46 +309,31 @@ const SearchRecord = () => {
       </View>
 
       {toast.visible && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          visible={toast.visible}
-        />
+        <Toast message={toast.message} type={toast.type} visible={toast.visible} />
       )}
     </View>
   );
 };
 
+export default SearchRecord;
+
 const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    backgroundColor: "#ffffff",
-    borderRadius: 5,
-    marginVertical: 20,
-    paddingHorizontal: 10,
-    marginHorizontal: 10,
-  },
-  filtersContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 10,
-  },
-  filterItem: {
-    flex: 1,
-    marginHorizontal: 5,
-    height: 40,
-    justifyContent: "center",
+    padding: 10,
   },
   searchIcon: {
-    marginRight: 10,
+    position: "absolute",
+    left: 20,
   },
   input: {
     flex: 1,
-    paddingVertical: 10,
-    fontSize: 16,
+    height: 40,
+    borderColor: "#cccccc",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingLeft: 40,
   },
   searchButton: {
     backgroundColor: "#DE3163",
@@ -344,89 +343,61 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#ffffff",
-    fontSize: 16,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 10,
-  },
-  statusButton: {
-    backgroundColor: "#DE3163",
-    padding: 10,
-    borderRadius: 5,
-  },
-  selectedButton: {
-    backgroundColor: "#000000", // Change to desired selected color
+    fontFamily: "outfit-medium",
   },
   listContainer: {
-    backgroundColor: "#ffffff",
-    padding: 15,
-    borderRadius: 5,
-    marginBottom: 10,
-    marginHorizontal: 10,
-    height: 640,
+    flex: 1,
+    padding: 10,
+  },
+  noDataContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  noDataImage: {
+    width: 200,
+    height: 200,
+  },
+  noDataText: {
+    fontSize: 20,
+    fontFamily: "outfit-medium",
+    color: "#cccccc",
+    marginTop: 20,
   },
   listItem: {
     backgroundColor: "#ffffff",
     padding: 10,
     borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#DE3163",
+    marginVertical: 10,
+    marginHorizontal:10,
+    // shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 10,
   },
   titleValueContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 5,
   },
   titleText: {
-    color: "#000000",
-    fontSize: 16,
     fontFamily: "outfit-medium",
-    marginLeft: 10,
-    flex: 1,
+    fontSize: 16,
   },
   valueText: {
-    color: "#000000",
-    fontSize: 14,
-    fontFamily: "outfit-medium",
-    marginRight: 10,
-    flex: 1,
-    padding: 5,
-    borderRadius: 5,
-    backgroundColor: "#f0f0f0",
+    fontFamily: "outfit-regular",
+    fontSize: 16,
   },
   pendingStatus: {
-    fontFamily: "outfit-bold",
-    backgroundColor: "#FAFA33", // Gold color for pending
+    color: "#ffcc00", // yellow
   },
   repairedStatus: {
-    fontFamily: "outfit-bold",
-    backgroundColor: "#00FFFF", // LimeGreen color for repaired
+    color: "#00cc00", // green
   },
   deliveredStatus: {
-    fontFamily: "outfit-bold",
-    backgroundColor: "#50C878", // DodgerBlue color for delivered
+    color: "#0000ff", // blue
   },
   canceledStatus: {
-    fontFamily: "outfit-bold",
-    backgroundColor: "#FF4500", // OrangeRed color for canceled
-  },
-  noDataContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 100,
-  },
-  noDataImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 10,
-  },
-  noDataText: {
-    fontSize: 18,
-    color: "#666666",
+    color: "#ff0000", // red
   },
 });
-
-export default SearchRecord;
