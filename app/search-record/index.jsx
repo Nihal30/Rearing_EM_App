@@ -230,88 +230,107 @@ const SearchRecord = () => {
 
       {/* List of Items */}
       <ScrollView>
-      <View style={styles.listContainer}>
-        {filteredData.length === 0 ? (
-          <View style={styles.noDataContainer}>
-            <Image source={NoData} style={styles.noDataImage} />
-            <Text style={styles.noDataText}>No records found</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredData}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() =>
-                  router.push({
-                    pathname: "/records",
-                    params: { OldFormData: JSON.stringify(item) },
-                  })
-                }
-              >
-                <View style={styles.listItem}>
-                  <View
-                    style={[
-                      styles.titleValueContainer,
-                      {
-                        flex: 1,
-                        direction: "row",
-                        justifyContent: "flex-end",
-                        margin: 5,
-                        marginBottom: 10,
-                        backgroundColor: "#ccc",
-                        padding: 5,
-                        alignItems: "center",
-                        borderRadius: 10,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.titleText}>Customer Details</Text>
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: "#D3D3D3",
-                        padding: 2,
-                        borderRadius: 30,
-                      }}
-                      onPress={() => handleDelete(item.id)}
-                    >
-                      <Icon name="close" size={20} color="#ff0000" />
-                    </TouchableOpacity>
-                  </View>
+        <View style={styles.listContainer}>
+          {filteredData.length === 0 ? (
+            <View style={styles.noDataContainer}>
+              <Image source={NoData} style={styles.noDataImage} />
+              <Text style={styles.noDataText}>No records found</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={filteredData}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/records",
+                      params: { OldFormData: JSON.stringify(item) },
+                    })
+                  }
+                >
+                  {console.log("items", item.customerKyc.Images)}
+                  <View style={styles.listItem}>
+                    <View style={styles.cardContainer}>
+                      {/* Image */}
+                      {/* Image */}
+                      {item.customerKyc.Images &&
+                      item.customerKyc.Images.length > 0 ? (
+                        <Image
+                          source={{ uri: item.customerKyc.Images[0]?.uri }} // Display the first image from the array
+                          style={styles.itemImage}
+                           
+                        />
+                      ) : (
+                        <Image
+                          source={NoData} // Fallback image if no images are available
+                          style={styles.itemImage}
+                           resizeMode="contain"
+                        />
+                      )}
 
-                  <View style={styles.titleValueContainer}>
-                    <Text style={styles.titleText}>Order Status:</Text>
-                    <Text
-                      style={[
-                        styles.valueText,
-                        getOrderStatusStyle(item?.orderDetails),
-                      ]}
-                    >
-                      {item?.orderDetails}
-                    </Text>
-                  </View>
-                  {item?.customerDetails?.customerList?.length > 0 && (
-                    <View>
-                      <View style={styles.titleValueContainer}>
-                        <Text style={styles.titleText}>Customer Name:</Text>
-                        <Text style={styles.valueText}>
-                          {item.customerDetails.customerList[0].name}
-                        </Text>
+                      <View style={styles.infoContainer}>
+                        {/* Order Status */}
+                        <View style={styles.titleValueContainer}>
+                          <Text
+                            style={[
+                              styles.valueText,
+                              getOrderStatusStyle(item?.orderDetails),
+                            ]}
+                          >
+                            {item?.orderDetails}
+                          </Text>
+                        </View>
+
+                        {/* Customer Name */}
+                        {item?.customerDetails?.customerList?.length > 0 && (
+                          <View style={styles.titleValueContainer}>
+                            <Text style={styles.titleText}>Customer Name:</Text>
+                            <Text style={styles.valueText}>
+                              {item.customerDetails.customerList[0].name}
+                            </Text>
+                          </View>
+                        )}
+
+                        {/* Phone Number */}
+                        {item?.customerDetails?.customerList?.length > 0 && (
+                          <View style={styles.titleValueContainer}>
+                            <Text style={styles.titleText}>Phone Number:</Text>
+                            <Text style={styles.valueText}>
+                              {item.customerDetails.customerList[0].phone}
+                            </Text>
+                          </View>
+                        )}
+
+                        {/* Date */}
+                        <View style={styles.titleValueContainer}>
+                          <Text style={styles.titleText}>Date:</Text>
+                          <Text style={styles.valueText}>
+                            {new Date(item.date).toLocaleDateString()}
+                          </Text>
+                        </View>
+
+                        {/* Model */}
+                        <View style={styles.titleValueContainer}>
+                          <Text style={styles.titleText}>Model:</Text>
+                          <Text style={styles.valueText}>{item.model}</Text>
+                        </View>
                       </View>
-                      <View style={styles.titleValueContainer}>
-                        <Text style={styles.titleText}>Email:</Text>
-                        <Text style={styles.valueText}>
-                          {item.customerDetails.customerList[0].email}
-                        </Text>
-                      </View>
+
+                      {/* Delete Icon */}
+                      <TouchableOpacity
+                        style={styles.deleteIcon}
+                        onPress={() => handleDelete(item.id)}
+                      >
+                        <Icon name="close" size={20} color="#ff0000" />
+                      </TouchableOpacity>
                     </View>
-                  )}
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        )}
-      </View>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          )}
+        </View>
       </ScrollView>
 
       {toast.visible && (
@@ -399,15 +418,80 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   pendingStatus: {
-    color: "#ffcc00", // yellow
+    color: "#fff", // yellow
+    backgroundColor: "#FF5F15",
+    fontFamily: "outfit-bold",
+    fontSize: 20,
+    paddingHorizontal: 30,
+
+    borderRadius: 10,
   },
   repairedStatus: {
-    color: "#00cc00", // green
+    color: "#ffffff", // green
+    backgroundColor: "#00cc00",
+    fontFamily: "outfit-bold",
+    fontSize: 20,
+    paddingHorizontal: 30,
+
+    borderRadius: 10,
   },
   deliveredStatus: {
-    color: "#0000ff", // blue
+    color: "#fff", // blue
+    backgroundColor: "#0000ff",
+    fontFamily: "outfit-bold",
+    fontSize: 20,
+    paddingHorizontal: 30,
+
+    borderRadius: 10,
   },
   canceledStatus: {
-    color: "#ff0000", // red
+    color: "#fff", // red
+    backgroundColor: "#ff0000",
+    fontFamily: "outfit-bold",
+    fontSize: 20,
+    paddingHorizontal: 30,
+
+    borderRadius: 10,
+  },
+
+  cardContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#E5E4E2",
+    padding: 10,
+    borderRadius: 10,
+    position: "relative", // Make the container a relative parent for absolute positioning
+  },
+  itemImage: {
+    width: 80,
+    
+    height: "100%",
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  infoContainer: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  deleteIcon: {
+    position: "absolute", // Absolute positioning to place it on top-right
+    top: 5, // Distance from the top of the card
+    right: 5, // Distance from the right side of the card
+    backgroundColor: "#D3D3D3",
+    padding: 5,
+    borderRadius: 20,
+  },
+  titleValueContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 2,
+  },
+  titleText: {
+    fontFamily: "outfit-medium",
+    fontSize: 16,
+  },
+  valueText: {
+    fontFamily: "outfit-regular",
+    fontSize: 16,
   },
 });
