@@ -205,7 +205,7 @@ const ServiceOperator = ({ visible, onClose }) => {
           </View>
         </View>
         {operators?.length > 0 && (
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer} style={{height:540}}>
             <Text style={[styles.text, { textAlign: "center" }]}>
               Operator List
             </Text>
