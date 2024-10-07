@@ -302,9 +302,17 @@ const SearchRecord = () => {
                           </View>
                         )}
 
+                         {/* collected */}
+                         <View style={styles.titleValueContainer}>
+                          <Text style={styles.titleText}>collected Date:</Text>
+                          <Text style={styles.valueText}>
+                            {new Date(item.currentDate).toLocaleDateString()}
+                          </Text>
+                        </View>
+
                         {/* Date */}
                         <View style={styles.titleValueContainer}>
-                          <Text style={styles.titleText}>Date:</Text>
+                          <Text style={styles.titleText}>Due Date:</Text>
                           <Text style={styles.valueText}>
                             {new Date(item.date).toLocaleDateString()}
                           </Text>

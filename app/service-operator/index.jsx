@@ -136,15 +136,8 @@ const index = () => {
               data={filteredData}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/records",
-                      params: { OldFormData: JSON.stringify(item) },
-                    })
-                  }
-                >
-                  {console.log("items", item.customerKyc.Images)}
+                
+                 
                   <View style={styles.listItem}>
                     <View style={styles.cardContainer}>
                       {/* Image */}
@@ -197,6 +190,14 @@ const index = () => {
                           </View>
                         )}
 
+                           {/* collected */}
+                           <View style={styles.titleValueContainer}>
+                          <Text style={styles.titleText}>collected Date:</Text>
+                          <Text style={styles.valueText}>
+                            {new Date(item.currentDate).toLocaleDateString()}
+                          </Text>
+                        </View>
+
                         {/* Date */}
                         <View style={styles.titleValueContainer}>
                           <Text style={styles.titleText}>Date:</Text>
@@ -221,7 +222,7 @@ const index = () => {
                       </TouchableOpacity>
                     </View>
                   </View>
-                </TouchableOpacity>
+               
               )}
             />
           )}
