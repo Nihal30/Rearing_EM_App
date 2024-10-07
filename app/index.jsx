@@ -1,9 +1,20 @@
 import { Link, useRouter } from "expo-router";
-import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, Image, StyleSheet, Button } from "react-native";
 import Hero from '../assets/images/Bg-Hero.jpg'
+import NotificationComponent, { triggerNotification } from "../components/NotificationConfig";
+import { useState } from "react";
 
 export default function Index() {
   const router = useRouter()
+  // const [message, setMessage] = useState(null);
+
+  // const triggerNotification = () => {
+  //   setMessage('Notification is working now !');
+
+  //   setTimeout(() => {
+  //     setMessage(null);  // Reset the state after notification
+  //   }, 1000); 
+  // };
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
@@ -96,6 +107,11 @@ export default function Index() {
         >
           <Text style={{ color: "#ffffff", fontSize: 16 }}>Service Operator</Text>
         </TouchableOpacity>
+        {/* <Button
+        title="notification"
+        onPress={triggerNotification}
+      />
+       <NotificationComponent message={message} /> */}
       </View>
     </View>
   );

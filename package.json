@@ -27,12 +27,15 @@
     "expo-checkbox": "~3.0.0",
     "expo-constants": "~16.0.2",
     "expo-dev-client": "~4.0.27",
+    "expo-device": "~6.0.2",
     "expo-file-system": "~17.0.1",
     "expo-font": "~12.0.10",
     "expo-image-picker": "~15.0.7",
     "expo-linking": "~6.3.1",
+    "expo-notifications": "^0.28.18",
     "expo-print": "~13.0.1",
     "expo-router": "~3.5.23",
+    "expo-sharing": "~12.0.1",
     "expo-splash-screen": "~0.27.6",
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.7",
@@ -55,8 +58,7 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-video": "^6.6.3",
     "react-native-web": "~0.19.10",
-    "uuid": "^10.0.0",
-    "expo-sharing": "~12.0.1"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

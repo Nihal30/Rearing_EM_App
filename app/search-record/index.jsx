@@ -18,6 +18,7 @@ import NoData from "../../assets/images/noData.jpg";
 import Toast from "../../components/Toast";
 import RNPickerSelect from "react-native-picker-select";
 import { Button } from "react-native-paper";
+import {  triggerNotification } from "../../components/NotificationConfig";
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -127,6 +128,23 @@ const SearchRecord = () => {
       { cancelable: true }
     );
   };
+
+  // // push notification 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const currentDateTime = new Date().toISOString();
+
+  //     // Loop through formData and check for matching dates
+  //     formData.forEach(item => {
+  //       if (item.date === currentDateTime) {
+  //         // Call the notification function with the title and body
+  //         triggerNotification("Match Found", `Item with ID: ${item.id} matches current date and time!`);
+  //       }
+  //     });
+  //   }, 60000); // Check every minute
+
+  //   return () => clearInterval(interval); // Clean up interval on unmount
+  // }, [formData]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
