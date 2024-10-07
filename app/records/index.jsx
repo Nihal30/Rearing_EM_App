@@ -1645,6 +1645,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: "100%",
+    borderColor:"#ccc",
     backgroundColor: "#fafafa",
   },
   dropdownContainer: {
@@ -1655,7 +1656,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 5,
     borderWidth: 1,
-    borderColor: "#000000",
+    borderColor: "#ccc",
     padding: 10,
   },
   radioContainer: {
@@ -1665,7 +1666,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: "ccc",
     padding: 10,
     borderRadius: 10,
   },
