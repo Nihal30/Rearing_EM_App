@@ -98,18 +98,37 @@ const NewRecord = () => {
   // console.log("validation", validation);
   const [model, setModel] = useState("");
   const [toast, setToast] = useState({ visible: false, message: "", type: "" });
+  const [openOperator, setOpenOperator] = useState(false);
+  const [valueOperator, setValueOperator] = useState(null);
+  const [operator, setOperator] = useState([]);
 
-  const handlePowerSelection = () => {
-    setPowerSelected((prev) => !prev);
+  const getData = async () => {
+    try {
+      const operators = await AsyncStorage.getItem("operators");
+      if (operators !== null) {
+        setOperator(
+          JSON.parse(operators).map((op) => ({ label: op.name, value: op.id }))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to load operators", error);
+    }
   };
+  useEffect(() => {
+    getData();
+  }, []);
 
-  const handleKeyboardSelection = () => {
-    setKeyboardSelected((prev) => !prev);
-  };
+  // const handlePowerSelection = () => {
+  //   setPowerSelected((prev) => !prev);
+  // };
 
-  const handleOtherDeviceSelection = () => {
-    setOtherDeviceSelected((prev) => !prev);
-  };
+  // const handleKeyboardSelection = () => {
+  //   setKeyboardSelected((prev) => !prev);
+  // };
+
+  // const handleOtherDeviceSelection = () => {
+  //   setOtherDeviceSelected((prev) => !prev);
+  // };
 
   const addProblem = () => {
     if (problems.trim()) {
@@ -190,7 +209,7 @@ const NewRecord = () => {
   };
 
   // footer function ---
-  const dummyNumber = "1234567890";
+
   const message = "Hello";
 
   const handleCall = () => {
@@ -298,7 +317,7 @@ const NewRecord = () => {
   const handleSubmit = async () => {
     // Validation: Check for required fields
     const currentDate = new Date();
-  const currentDateString = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const currentDateString = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD
     if (
       !value ||
       !customerList.length ||
@@ -322,8 +341,9 @@ const NewRecord = () => {
 
     const newFormData = {
       id: formDataId || generateCustomId(), // Use existing ID if available, otherwise generate a new one
-      currentDate:currentDateString,
+      currentDate: currentDateString,
       orderDetails: value,
+      operatorDetails: valueOperator,
       customerDetails: {
         customerList: customerList,
         AllCustomerDetails: customerDetails,
@@ -461,6 +481,7 @@ const NewRecord = () => {
 
           if (previousFormData) {
             setValue(previousFormData?.orderDetails);
+            setValueOperator(previousFormData?.operatorDetails);
             setCustomerList(previousFormData?.customerDetails?.customerList);
             setCustomerDetails(
               previousFormData?.customerDetails?.AllCustomerDetails
@@ -716,11 +737,11 @@ const NewRecord = () => {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                zIndex:10
+                zIndex: 10,
               }}
             >
               {/* Customer Details */}
-              <View style={{ position: "relative" ,zIndex:100}}>
+              <View style={{ position: "relative", zIndex: 100 }}>
                 <TextInput
                   value={searchText}
                   onChangeText={handleSearchCustomers}
@@ -1183,6 +1204,25 @@ const NewRecord = () => {
               multiline
             />
             <View>
+              {/* Dropdown for Order Details */}
+              <Text style={styles.label}>Select Operator</Text>
+
+              <DropDownPicker
+                open={openOperator}
+                value={valueOperator}
+                items={operator}
+                setOpen={setOpenOperator}
+                setValue={setValueOperator}
+                setItems={setOperator}
+                placeholder="Select Operator"
+                style={[
+                  styles.picker,
+                  validation.orderError && styles.errorInput,
+                ]}
+                dropDownContainerStyle={styles.dropdownContainer}
+                dropDownDirection="BOTTOM" // Specify direction if necessary
+                zIndex={1000} // Make sure it appears on top of other components
+              />
               <Text style={[styles.label, { marginTop: 10 }]}>
                 Other Location:
               </Text>
@@ -1201,8 +1241,8 @@ const NewRecord = () => {
               </RadioButton.Group>
 
               {selectedLocation === "serviceCenter" && (
-                <View>
-                  <TextInput
+                <View style={{ flex: 1 }}>
+                  {/* <TextInput
                     value={serviceCenterName}
                     onChangeText={setServiceCenterName}
                     style={[styles.input, { height: 50, marginTop: 10 }]}
@@ -1228,7 +1268,7 @@ const NewRecord = () => {
                     ]}
                     placeholder="Contact No"
                     keyboardType="phone-pad"
-                  />
+                  /> */}
 
                   {/* Date Picker */}
                   <Text style={[styles.label, { marginTop: 10 }]}>

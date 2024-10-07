@@ -17,7 +17,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FormDataContext } from "../../hooks/FormDataConextApi";
 import NoData from "../../assets/images/noData.jpg";
 
-
 const index = () => {
   const router = useRouter();
 
@@ -62,6 +61,27 @@ const index = () => {
   useEffect(() => {
     getData();
   }, []);
+
+  const handleOperatorFilter = (operatorId) => {
+    const filtered = formData.filter((item) => {
+      // Check if operatorDetails is an array or a string
+      const matchesOperator = value
+      ? item.operatorDetails === value
+      : true; 
+
+      return matchesOperator; // Return true if there's a match
+    });
+
+    setFilteredData(filtered); // Update the filtered data state
+  };
+
+  const handleOperatorChange = (operatorId) => {
+    console.log("Selected Operator ID:", operatorId); // Log the selected operator ID
+    setValue(operatorId);
+
+    handleOperatorFilter(operatorId); // Call the new filtering function
+  };
+
   return (
     <View>
       {/* Header */}
@@ -107,7 +127,7 @@ const index = () => {
             value={value}
             items={items}
             setOpen={setOpen}
-            setValue={setValue}
+            setValue={ handleOperatorChange}
             setItems={setItems}
             placeholder="Select Operator"
             style={[styles.picker]}
@@ -124,108 +144,104 @@ const index = () => {
         </View>
       </View>
 
-      <ScrollView style={{height:670}}>
+      <ScrollView style={{ height: 670 }}>
         {/* <View style={styles.listContainer}> */}
-          {filteredData.length === 0 ? (
-            <View style={styles.noDataContainer}>
-              <Image source={NoData} style={styles.noDataImage} />
-              <Text style={styles.noDataText}>No records found</Text>
-            </View>
-          ) : (
-            <FlatList
-              data={filteredData}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                
-                 
-                  <View style={styles.listItem}>
-                    <View style={styles.cardContainer}>
-                      {/* Image */}
-                      {/* Image */}
-                      {item.customerKyc.Images &&
-                      item.customerKyc.Images.length > 0 ? (
-                        <Image
-                          source={{ uri: item.customerKyc.Images[0]?.uri }} // Display the first image from the array
-                          style={styles.itemImage}
-                           
-                        />
-                      ) : (
-                        <Image
-                          source={NoData} // Fallback image if no images are available
-                          style={styles.itemImage}
-                           resizeMode="contain"
-                        />
-                      )}
+        {filteredData.length === 0 ? (
+          <View style={styles.noDataContainer}>
+            <Image source={NoData} style={styles.noDataImage} />
+            <Text style={styles.noDataText}>No records found</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.listItem}>
+                <View style={styles.cardContainer}>
+                  {/* Image */}
+                  {/* Image */}
+                  {item.customerKyc.Images &&
+                  item.customerKyc.Images.length > 0 ? (
+                    <Image
+                      source={{ uri: item.customerKyc.Images[0]?.uri }} // Display the first image from the array
+                      style={styles.itemImage}
+                    />
+                  ) : (
+                    <Image
+                      source={NoData} // Fallback image if no images are available
+                      style={styles.itemImage}
+                      resizeMode="contain"
+                    />
+                  )}
 
-                      <View style={styles.infoContainer}>
-                        {/* Order Status */}
-                        <View style={styles.titleValueContainer}>
-                          <Text
-                            style={[
-                              styles.valueText,
-                              getOrderStatusStyle(item?.orderDetails),
-                            ]}
-                          >
-                            {item?.orderDetails}
-                          </Text>
-                        </View>
-
-                        {/* Customer Name */}
-                        {item?.customerDetails?.customerList?.length > 0 && (
-                          <View style={styles.titleValueContainer}>
-                            <Text style={styles.titleText}>Customer Name:</Text>
-                            <Text style={styles.valueText}>
-                              {item.customerDetails.customerList[0].name}
-                            </Text>
-                          </View>
-                        )}
-
-                        {/* Phone Number */}
-                        {item?.customerDetails?.customerList?.length > 0 && (
-                          <View style={styles.titleValueContainer}>
-                            <Text style={styles.titleText}>Phone Number:</Text>
-                            <Text style={styles.valueText}>
-                              {item.customerDetails.customerList[0].phone}
-                            </Text>
-                          </View>
-                        )}
-
-                           {/* collected */}
-                           <View style={styles.titleValueContainer}>
-                          <Text style={styles.titleText}>collected Date:</Text>
-                          <Text style={styles.valueText}>
-                            {new Date(item.currentDate).toLocaleDateString()}
-                          </Text>
-                        </View>
-
-                        {/* Date */}
-                        <View style={styles.titleValueContainer}>
-                          <Text style={styles.titleText}>Date:</Text>
-                          <Text style={styles.valueText}>
-                            {new Date(item.date).toLocaleDateString()}
-                          </Text>
-                        </View>
-
-                        {/* Model */}
-                        <View style={styles.titleValueContainer}>
-                          <Text style={styles.titleText}>Model:</Text>
-                          <Text style={styles.valueText}>{item.model}</Text>
-                        </View>
-                      </View>
-
-                      {/* Delete Icon */}
-                      <TouchableOpacity
-                        style={styles.deleteIcon}
-                        onPress={() => handleDelete(item.id)}
+                  <View style={styles.infoContainer}>
+                    {/* Order Status */}
+                    <View style={styles.titleValueContainer}>
+                      <Text
+                        style={[
+                          styles.valueText,
+                          getOrderStatusStyle(item?.orderDetails),
+                        ]}
                       >
-                        <Icon name="close" size={20} color="#ff0000" />
-                      </TouchableOpacity>
+                        {item?.orderDetails}
+                      </Text>
+                    </View>
+
+                    {/* Customer Name */}
+                    {item?.customerDetails?.customerList?.length > 0 && (
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.titleText}>Customer Name:</Text>
+                        <Text style={styles.valueText}>
+                          {item.customerDetails.customerList[0].name}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Phone Number */}
+                    {item?.customerDetails?.customerList?.length > 0 && (
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.titleText}>Phone Number:</Text>
+                        <Text style={styles.valueText}>
+                          {item.customerDetails.customerList[0].phone}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* collected */}
+                    <View style={styles.titleValueContainer}>
+                      <Text style={styles.titleText}>collected Date:</Text>
+                      <Text style={styles.valueText}>
+                        {new Date(item.currentDate).toLocaleDateString()}
+                      </Text>
+                    </View>
+
+                    {/* Date */}
+                    <View style={styles.titleValueContainer}>
+                      <Text style={styles.titleText}>Date:</Text>
+                      <Text style={styles.valueText}>
+                        {new Date(item.date).toLocaleDateString()}
+                      </Text>
+                    </View>
+
+                    {/* Model */}
+                    <View style={styles.titleValueContainer}>
+                      <Text style={styles.titleText}>Model:</Text>
+                      <Text style={styles.valueText}>{item.model}</Text>
                     </View>
                   </View>
-               
-              )}
-            />
-          )}
+
+                  {/* Delete Icon */}
+                  <TouchableOpacity
+                    style={styles.deleteIcon}
+                    onPress={() => handleDelete(item.id)}
+                  >
+                    <Icon name="close" size={20} color="#ff0000" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          />
+        )}
         {/* </View> */}
       </ScrollView>
 
@@ -376,7 +392,7 @@ const styles = StyleSheet.create({
   },
   itemImage: {
     width: 80,
-    
+
     height: "100%",
     borderRadius: 10,
     marginRight: 10,

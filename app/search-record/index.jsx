@@ -187,7 +187,7 @@ const SearchRecord = () => {
           alignItems: "center",
         }}
       >
-        <View style={{ borderWidth: 1, borderRadius: 10, width: 150,height:45,alignItems:"center",justifyContent:"center" }}>
+        <View style={{ borderWidth: 1,borderColor:"#ccc", borderRadius: 10, width: 150,height:45,alignItems:"center",justifyContent:"center" }}>
           <RNPickerSelect
           
             onValueChange={(value) => setOrderType(value)}
