@@ -17,8 +17,6 @@ import { TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
-import * as Print from "expo-print"; // Importing Print module
-import * as FileSystem from "expo-file-system"; // Importing FileSystem module
 // import * as Sharing from 'expo-sharing'
 import DropDownPicker from "react-native-dropdown-picker";
 import Toast from "../../components/Toast";
@@ -34,6 +32,11 @@ import Checkbox from "expo-checkbox";
 import { MaterialIcons } from "@expo/vector-icons";
 import { v4 as uuidv4 } from "uuid";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Print from "expo-print";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from 'expo-sharing';
+
+
 const NewRecord = () => {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState("");
@@ -234,68 +237,47 @@ const NewRecord = () => {
     try {
       console.log("Preparing to download PDF...");
 
-      //   // Prepare the HTML content for the PDF
-      //   const htmlContent = `
-      //     <html>
-      //       <head>
-      //         <style>
-      //           body { font-family: Arial, sans-serif; }
-      //           h1 { color: #DE3163; }
-      //           p { margin: 5px 0; }
-      //         </style>
-      //       </head>
-      //       <body>
-      //         <h1>Record Details</h1>
-      //         <p><strong>Customer Model:</strong> ${customerModel}</p>
-      //         <p><strong>Problems:</strong> ${problems}</p>
-      //         <p><strong>Price:</strong> ${price}</p>
-      //         <p><strong>Paid:</strong> ${paid}</p>
-      //         <p><strong>Lock Code:</strong> ${lockCode}</p>
-      //         <p><strong>Barcode:</strong> ${barcode}</p>
-      //       </body>
-      //     </html>
-      //   `;
+      // Prepare HTML content for the PDF
+      const htmlContent = `
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; }
+              h1 { color: #DE3163; }
+              p { margin: 5px 0; }
+            </style>
+          </head>
+          <body>
+            <h1>Record Details</h1>
+            <p><strong>Customer Model:</strong> ${customerModel}</p>
+            <p><strong>Problems:</strong> ${problems}</p>
+            <p><strong>Price:</strong> ${price}</p>
+            <p><strong>Paid:</strong> ${paid}</p>
+            <p><strong>Lock Code:</strong> ${lockCode}</p>
+            <p><strong>Barcode:</strong> ${barcode}</p>
+          </body>
+        </html>
+      `;
 
-      //   // Create a PDF from the HTML
-      //   const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      // Generate PDF from the HTML content
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
 
-      //   // Log the temporary URI of the generated PDF
-      //   console.log('PDF generated at temporary URI:', uri);
+      console.log("PDF generated at temporary URI:", uri);
 
-      //   // Define the destination file path
-      //   const fileUri = `${FileSystem.documentDirectory}record.pdf`;
+      // Move the generated PDF to a new location if desired
+      const fileUri = `${FileSystem.documentDirectory}record.pdf`;
+      await FileSystem.moveAsync({ from: uri, to: fileUri });
 
-      //   // Move the generated PDF to the desired location
-      //   await FileSystem.moveAsync({
-      //     from: uri,
-      //     to: fileUri,
-      //   });
+      console.log("PDF downloaded to:", fileUri);
 
-      //    // Log the final file URI
-      // console.log('PDF downloaded to:', fileUri);
-
-      // Show the toast with success message
-      setToastMessage("PDF downloaded successfully!");
-      setToastType("success"); // Set type to success
-      setToastVisible(true);
-
-      // Hide the toast after 3 seconds
-      setTimeout(() => {
-        setToastVisible(false);
-      }, 3000);
-      // Optionally, open the PDF file after download (if you want)
-      // await Sharing.shareAsync(fileUri); // Uncomment if you want to share the file
+      // Open or share the PDF
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        console.log("Sharing is not available on this device.");
+      }
     } catch (error) {
       console.error("Error generating PDF:", error);
-      // Show the toast with error message
-      setToastMessage("Error downloading PDF.");
-      setToastType("error"); // Set type to error
-      setToastVisible(true);
-
-      // Hide the toast after 3 seconds
-      setTimeout(() => {
-        setToastVisible(false);
-      }, 3000);
     }
   };
 
@@ -1645,7 +1627,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: "100%",
-    borderColor:"#ccc",
+    borderColor: "#ccc",
     backgroundColor: "#fafafa",
   },
   dropdownContainer: {
