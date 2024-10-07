@@ -187,8 +187,9 @@ const SearchRecord = () => {
           alignItems: "center",
         }}
       >
-        <View style={{ borderWidth: 1, borderRadius: 10, width: 150 }}>
+        <View style={{ borderWidth: 1, borderRadius: 10, width: 150,height:45,alignItems:"center",justifyContent:"center" }}>
           <RNPickerSelect
+          
             onValueChange={(value) => setOrderType(value)}
             items={[
               { label: "All", value: null },
@@ -259,13 +260,12 @@ const SearchRecord = () => {
                         <Image
                           source={{ uri: item.customerKyc.Images[0]?.uri }} // Display the first image from the array
                           style={styles.itemImage}
-                           
                         />
                       ) : (
                         <Image
                           source={NoData} // Fallback image if no images are available
                           style={styles.itemImage}
-                           resizeMode="contain"
+                          resizeMode="contain"
                         />
                       )}
 
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   },
   itemImage: {
     width: 80,
-    
+
     height: "100%",
     borderRadius: 10,
     marginRight: 10,
