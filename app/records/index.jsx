@@ -664,7 +664,7 @@ const NewRecord = () => {
             <View
               style={[
                 styles.customerDetails,
-                { borderRadius: 10, marginTop: 10 },
+                { borderRadius: 10, marginTop: 10 ,zIndex:5000},
                 validation.customerError && styles.errorInput,
               ]}
             >
@@ -735,7 +735,7 @@ const NewRecord = () => {
                     value={searchText}
                     onChangeText={handleSearchCustomers}
                     style={[styles.input, { width: 190 ,borderColor:"#ccc"}]}
-                    placeholder="Select customers"
+                    placeholder="Search & Select customers"
                   />
                   {filteredCustomers.length > 0 && (
                     <View
@@ -1198,7 +1198,7 @@ const NewRecord = () => {
             <View
               style={[
                 styles.customerDetails,
-                { borderRadius: 10, marginTop: 10 },
+                { borderRadius: 10, marginTop: 10 ,zIndex: 500 },
               ]}
             >
               <TextInput
@@ -1208,7 +1208,7 @@ const NewRecord = () => {
                 placeholder="Name Of Receiver(Owner/Assistant)"
                 multiline
               />
-              <View style={{ position: "relative", zIndex: 5000 }}>
+              <View style={{ position: "relative", zIndex: 500 }}>
                 {/* Dropdown for Order Details */}
                 <Text style={styles.label}>Select Operator</Text>
 
@@ -1224,7 +1224,7 @@ const NewRecord = () => {
                   dropDownContainerStyle={[
                     styles.dropdownContainer,
                     {
-                      height: 140,
+                      height:200,
                       borderColor: "#ccc",
 
                       position: "absolute",
