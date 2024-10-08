@@ -231,12 +231,12 @@ const index = () => {
                   </View>
 
                   {/* Delete Icon */}
-                  <TouchableOpacity
+                  {/* <TouchableOpacity
                     style={styles.deleteIcon}
                     onPress={() => handleDelete(item.id)}
                   >
                     <Icon name="close" size={20} color="#ff0000" />
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
               </View>
             )}

@@ -638,9 +638,10 @@ const NewRecord = () => {
 
         {/* Form */}
         <ScrollView style={styles.formContainer} scrollEnabled={!openOperator}>
-          <View>
+          <View >
             {/* Dropdown for Order Details */}
             <Text style={styles.label}>Order Details:</Text>
+            <View style={{zIndex:100000}}>
             <DropDownPicker
               open={open}
               value={value}
@@ -655,6 +656,7 @@ const NewRecord = () => {
               ]}
               dropDownContainerStyle={styles.dropdownContainer}
             />
+            </View>
             {validation.orderError && (
               <Text style={{ margin: 10, color: "red" }}>
                 Please select order type
