@@ -470,8 +470,8 @@ const NewRecord = () => {
             setProblemList(previousFormData?.problems);
             setPrice(previousFormData?.price);
             setPaid(previousFormData?.paid);
-            setDate(previousFormData?.date);
-            setTime(previousFormData?.time);
+            setDate(new Date(previousFormData?.date));
+            setTime(new Date(previousFormData?.time));
             setOwner(previousFormData?.owner);
             setAdditionalDetails(previousFormData?.additionalDetails);
             setDeviceWarranty(previousFormData?.deviceWarranty);
@@ -501,8 +501,8 @@ const NewRecord = () => {
                 "previousFormData?.serviceDate",
                 previousFormData?.serviceDate
               );
-              setTimeService(previousFormData?.serviceTime || new Date());
-              setDateService(previousFormData?.serviceDate || new Date());
+              setTimeService(new Date(previousFormData?.serviceTime) || new Date());
+              setDateService(new Date(previousFormData?.serviceDate) || new Date());
             } else if (location === "inHouse") {
               // Optionally clear service center details if inHouse is selected
               setContactNo("");

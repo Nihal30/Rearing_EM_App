@@ -133,8 +133,9 @@ const SearchRecord = () => {
 
   const [message, setMessage] = useState(null);
 
-  const triggerNotification = (title, status, body) => {
-    setMessage(`${title}: ${status} :${body}`);
+  const triggerNotification = (title, body) => {
+    setMessage(`${title}\n${body}`); // Fixed the message formatting
+    console.log("Notification trigger");
 
     setTimeout(() => {
       setMessage(null);
@@ -142,27 +143,38 @@ const SearchRecord = () => {
   };
 
   // Push notification
+
   useEffect(() => {
     const interval = setInterval(() => {
       const currentDateTime = new Date();
 
       formData.forEach((item) => {
-        const itemDateTime = new Date(item.date);
+        // Extract the date and time separately from the form data
+        const itemDate = new Date(item.date).setHours(0, 0, 0, 0); // Set time to midnight to only compare date
+        const itemTime = new Date(item.time); // Compare exact time
 
-        const timeDifference = Math.abs(currentDateTime - itemDateTime) / 60000; // Difference in minutes
+        // Extract the current date and time
+        const currentDate = currentDateTime.setHours(0, 0, 0, 0); // Current date with time set to midnight
+        const currentTime = currentDateTime.getTime(); // Current time in milliseconds
 
-        if (timeDifference <= 5) {
-          // Trigger if the difference is within 5 minutes
-          triggerNotification(
-            ` Its delivery date today!``Order Status: ${item?.orderDetails}`,
-            `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone} `
-          );
+        // Check if the date matches
+        if (itemDate === currentDate) {
+          // Calculate time difference in minutes
+          const timeDifference = Math.abs(currentTime - itemTime) / 60000;
+
+          // If the time difference is within 5 minutes, trigger the notification
+          if (timeDifference <= 5) {
+            triggerNotification(
+              ` Order Status: ${item?.orderDetails}`, // Fixed string
+              `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone}`
+            );
+          }
         }
       });
     }, 60000); // Check every minute
 
     return () => clearInterval(interval); // Clean up interval on unmount
-  }, [formData]);
+  }, [formData]); // Ensure formData changes are tracked
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -276,114 +288,114 @@ const SearchRecord = () => {
 
       {/* List of Items */}
       {/* <ScrollView> */}
-        <View style={styles.listContainer}>
-          {filteredData.length === 0 ? (
-            <View style={styles.noDataContainer}>
-              <Image source={NoData} style={styles.noDataImage} />
-              <Text style={styles.noDataText}>No records found</Text>
-            </View>
-          ) : (
-            <FlatList
-              data={filteredData}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/records",
-                      params: { OldFormData: JSON.stringify(item) },
-                    })
-                  }
-                >
-                  {console.log("items", item.customerKyc.Images)}
-                  <View style={styles.listItem}>
-                    <View style={styles.cardContainer}>
-                      {/* Image */}
-                      {/* Image */}
-                      {item.customerKyc.Images &&
-                      item.customerKyc.Images.length > 0 ? (
-                        <Image
-                          source={{ uri: item.customerKyc.Images[0]?.uri }} // Display the first image from the array
-                          style={styles.itemImage}
-                        />
-                      ) : (
-                        <Image
-                          source={NoData} // Fallback image if no images are available
-                          style={styles.itemImage}
-                          resizeMode="contain"
-                        />
-                      )}
+      <View style={styles.listContainer}>
+        {filteredData.length === 0 ? (
+          <View style={styles.noDataContainer}>
+            <Image source={NoData} style={styles.noDataImage} />
+            <Text style={styles.noDataText}>No records found</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/records",
+                    params: { OldFormData: JSON.stringify(item) },
+                  })
+                }
+              >
+                {console.log("items", item.customerKyc.Images)}
+                <View style={styles.listItem}>
+                  <View style={styles.cardContainer}>
+                    {/* Image */}
+                    {/* Image */}
+                    {item.customerKyc.Images &&
+                    item.customerKyc.Images.length > 0 ? (
+                      <Image
+                        source={{ uri: item.customerKyc.Images[0]?.uri }} // Display the first image from the array
+                        style={styles.itemImage}
+                      />
+                    ) : (
+                      <Image
+                        source={NoData} // Fallback image if no images are available
+                        style={styles.itemImage}
+                        resizeMode="contain"
+                      />
+                    )}
 
-                      <View style={styles.infoContainer}>
-                        {/* Order Status */}
-                        <View style={styles.titleValueContainer}>
-                          <Text
-                            style={[
-                              styles.valueText,
-                              getOrderStatusStyle(item?.orderDetails),
-                            ]}
-                          >
-                            {item?.orderDetails}
-                          </Text>
-                        </View>
-
-                        {/* Customer Name */}
-                        {item?.customerDetails?.customerList?.length > 0 && (
-                          <View style={styles.titleValueContainer}>
-                            <Text style={styles.titleText}>Customer Name:</Text>
-                            <Text style={styles.valueText}>
-                              {item.customerDetails.customerList[0].name}
-                            </Text>
-                          </View>
-                        )}
-
-                        {/* Phone Number */}
-                        {item?.customerDetails?.customerList?.length > 0 && (
-                          <View style={styles.titleValueContainer}>
-                            <Text style={styles.titleText}>Phone Number:</Text>
-                            <Text style={styles.valueText}>
-                              {item.customerDetails.customerList[0].phone}
-                            </Text>
-                          </View>
-                        )}
-
-                        {/* collected */}
-                        <View style={styles.titleValueContainer}>
-                          <Text style={styles.titleText}>collected Date:</Text>
-                          <Text style={styles.valueText}>
-                            {new Date(item.currentDate).toLocaleDateString()}
-                          </Text>
-                        </View>
-
-                        {/* Date */}
-                        <View style={styles.titleValueContainer}>
-                          <Text style={styles.titleText}>Due Date:</Text>
-                          <Text style={styles.valueText}>
-                            {new Date(item.date).toLocaleDateString()}
-                          </Text>
-                        </View>
-
-                        {/* Model */}
-                        <View style={styles.titleValueContainer}>
-                          <Text style={styles.titleText}>Model:</Text>
-                          <Text style={styles.valueText}>{item.model}</Text>
-                        </View>
+                    <View style={styles.infoContainer}>
+                      {/* Order Status */}
+                      <View style={styles.titleValueContainer}>
+                        <Text
+                          style={[
+                            styles.valueText,
+                            getOrderStatusStyle(item?.orderDetails),
+                          ]}
+                        >
+                          {item?.orderDetails}
+                        </Text>
                       </View>
 
-                      {/* Delete Icon */}
-                      <TouchableOpacity
-                        style={styles.deleteIcon}
-                        onPress={() => handleDelete(item.id)}
-                      >
-                        <Icon name="close" size={20} color="#ff0000" />
-                      </TouchableOpacity>
+                      {/* Customer Name */}
+                      {item?.customerDetails?.customerList?.length > 0 && (
+                        <View style={styles.titleValueContainer}>
+                          <Text style={styles.titleText}>Customer Name:</Text>
+                          <Text style={styles.valueText}>
+                            {item.customerDetails.customerList[0].name}
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Phone Number */}
+                      {item?.customerDetails?.customerList?.length > 0 && (
+                        <View style={styles.titleValueContainer}>
+                          <Text style={styles.titleText}>Phone Number:</Text>
+                          <Text style={styles.valueText}>
+                            {item.customerDetails.customerList[0].phone}
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* collected */}
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.titleText}>collected Date:</Text>
+                        <Text style={styles.valueText}>
+                          {new Date(item.currentDate).toLocaleDateString()}
+                        </Text>
+                      </View>
+
+                      {/* Date */}
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.titleText}>Due Date:</Text>
+                        <Text style={styles.valueText}>
+                          {new Date(item.date).toLocaleDateString()}
+                        </Text>
+                      </View>
+
+                      {/* Model */}
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.titleText}>Model:</Text>
+                        <Text style={styles.valueText}>{item.model}</Text>
+                      </View>
                     </View>
+
+                    {/* Delete Icon */}
+                    <TouchableOpacity
+                      style={styles.deleteIcon}
+                      onPress={() => handleDelete(item.id)}
+                    >
+                      <Icon name="close" size={20} color="#ff0000" />
+                    </TouchableOpacity>
                   </View>
-                </TouchableOpacity>
-              )}
-            />
-          )}
-        </View>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </View>
       {/* </ScrollView> */}
 
       {message && <NotificationComponent message={message} />}

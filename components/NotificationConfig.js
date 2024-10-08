@@ -49,9 +49,9 @@ const NotificationComponent = ({ message }) => {
     try {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Notification',
+          title: `It's delivery date today!`,
           body: message,
-          data: { messageData: message },
+        //   data: { messageData: message },
         },
         trigger: { seconds: 1 }, // Notification triggers after 1 second
       });
