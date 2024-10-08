@@ -18,7 +18,9 @@ import NoData from "../../assets/images/noData.jpg";
 import Toast from "../../components/Toast";
 import RNPickerSelect from "react-native-picker-select";
 import { Button } from "react-native-paper";
-import {  triggerNotification } from "../../components/NotificationConfig";
+import NotificationComponent, {
+  triggerNotification,
+} from "../../components/NotificationConfig";
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -129,22 +131,38 @@ const SearchRecord = () => {
     );
   };
 
-  // // push notification 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const currentDateTime = new Date().toISOString();
+  const [message, setMessage] = useState(null);
 
-  //     // Loop through formData and check for matching dates
-  //     formData.forEach(item => {
-  //       if (item.date === currentDateTime) {
-  //         // Call the notification function with the title and body
-  //         triggerNotification("Match Found", `Item with ID: ${item.id} matches current date and time!`);
-  //       }
-  //     });
-  //   }, 60000); // Check every minute
+  const triggerNotification = (title, status, body) => {
+    setMessage(`${title}: ${status} :${body}`);
 
-  //   return () => clearInterval(interval); // Clean up interval on unmount
-  // }, [formData]);
+    setTimeout(() => {
+      setMessage(null);
+    }, 1000);
+  };
+
+  // Push notification
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentDateTime = new Date();
+
+      formData.forEach((item) => {
+        const itemDateTime = new Date(item.date);
+
+        const timeDifference = Math.abs(currentDateTime - itemDateTime) / 60000; // Difference in minutes
+
+        if (timeDifference <= 5) {
+          // Trigger if the difference is within 5 minutes
+          triggerNotification(
+            ` Its delivery date today!``Order Status: ${item?.orderDetails}`,
+            `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone} `
+          );
+        }
+      });
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval); // Clean up interval on unmount
+  }, [formData]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -205,9 +223,18 @@ const SearchRecord = () => {
           alignItems: "center",
         }}
       >
-        <View style={{ borderWidth: 1,borderColor:"#ccc", borderRadius: 10, width: 150,height:45,alignItems:"center",justifyContent:"center" }}>
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: "#ccc",
+            borderRadius: 10,
+            width: 150,
+            height: 45,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <RNPickerSelect
-          
             onValueChange={(value) => setOrderType(value)}
             items={[
               { label: "All", value: null },
@@ -248,7 +275,7 @@ const SearchRecord = () => {
       </View>
 
       {/* List of Items */}
-      <ScrollView>
+      {/* <ScrollView> */}
         <View style={styles.listContainer}>
           {filteredData.length === 0 ? (
             <View style={styles.noDataContainer}>
@@ -320,8 +347,8 @@ const SearchRecord = () => {
                           </View>
                         )}
 
-                         {/* collected */}
-                         <View style={styles.titleValueContainer}>
+                        {/* collected */}
+                        <View style={styles.titleValueContainer}>
                           <Text style={styles.titleText}>collected Date:</Text>
                           <Text style={styles.valueText}>
                             {new Date(item.currentDate).toLocaleDateString()}
@@ -357,8 +384,9 @@ const SearchRecord = () => {
             />
           )}
         </View>
-      </ScrollView>
+      {/* </ScrollView> */}
 
+      {message && <NotificationComponent message={message} />}
       {toast.visible && (
         <Toast
           message={toast.message}

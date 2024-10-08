@@ -6,15 +6,7 @@ import { useState } from "react";
 
 export default function Index() {
   const router = useRouter()
-  // const [message, setMessage] = useState(null);
-
-  // const triggerNotification = () => {
-  //   setMessage('Notification is working now !');
-
-  //   setTimeout(() => {
-  //     setMessage(null);  // Reset the state after notification
-  //   }, 1000); 
-  // };
+  
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
