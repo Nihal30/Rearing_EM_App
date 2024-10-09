@@ -170,7 +170,7 @@ const SearchRecord = () => {
     }, 60000);
 
     return () => clearInterval(interval); // Clean up interval on unmount
-  }, [formData]);
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
