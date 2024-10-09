@@ -79,8 +79,32 @@ const index = () => {
     console.log("Selected Operator ID:", operatorId); // Log the selected operator ID
     setValue(operatorId);
 
-    handleOperatorFilter(operatorId); // Call the new filtering function
+    // handleOperatorFilter(operatorId); // Call the new filtering function
+    const filtered = formData.filter((item) => {
+      // Check if operatorDetails is an array or a string
+      const matchesOperator = value
+      ? item.operatorDetails === value
+      : true; 
+
+      return matchesOperator; // Return true if there's a match
+    });
+
+    setFilteredData(filtered);
   };
+
+  useEffect(()=>{
+    const filtered = formData.filter((item) => {
+      // Check if operatorDetails is an array or a string
+      const matchesOperator = value
+      ? item.operatorDetails === value
+      : true; 
+
+      return matchesOperator; // Return true if there's a match
+    });
+
+    setFilteredData(filtered);
+
+  },[value])
 
   return (
     <View>
