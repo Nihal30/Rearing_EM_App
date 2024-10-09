@@ -39,7 +39,7 @@ const SearchRecord = () => {
 
   // Function to handle filtering based on search text, order type, service, and date
   const handleSearch = () => {
-    const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];  // Get current date in YYYY-MM-DD format
 
     const filtered = formData.filter((item) => {
       const matchesSearchText =
@@ -57,9 +57,10 @@ const SearchRecord = () => {
         ? item.selectedLocation === "serviceCenter"
         : true;  // If isService is false, don't filter by this
 
-      const matchesToday = isTodayFilter
-        ? item.date?.split("T")[0] === today // Check if order date matches today's date
-        : true; // If 'Today' filter is active, check if date matches
+      // Safely check if today's filter is enabled and date matches
+    const matchesToday = isTodayFilter 
+    ? item.date === today // Ensure `orderDate` is valid
+    : true;// If 'Today' filter is active, check if date matches
 
       return (
         matchesSearchText && matchesOrderType && matchesService && matchesToday
