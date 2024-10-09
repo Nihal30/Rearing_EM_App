@@ -39,7 +39,7 @@ const SearchRecord = () => {
 
   // Function to handle filtering based on search text, order type, service, and date
   const handleSearch = () => {
-    const today = new Date().toISOString().split("T")[0];  // Get current date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
 
     const filtered = formData.filter((item) => {
       const matchesSearchText =
@@ -53,14 +53,17 @@ const SearchRecord = () => {
         ? item.orderDetails === orderType
         : true; // If orderType is null, show all records
 
-        const matchesService = isService
+      const matchesService = isService
         ? item.selectedLocation === "serviceCenter"
-        : true;  // If isService is false, don't filter by this
+        : true; // If isService is false, don't filter by this
 
       // Safely check if today's filter is enabled and date matches
-    const matchesToday = isTodayFilter 
-    ? item.date === today // Ensure `orderDate` is valid
-    : true;// If 'Today' filter is active, check if date matches
+      const orderDate = item.date ? item.date.split("T")[0] : "";
+      const matchesToday = isTodayFilter 
+      ? orderDate === today  // Compare the formatted order date with today's date
+      : true; // If 'Today' filter is active, check if date matches
+      console.log("orderDate", orderDate);
+      console.log("today", today);
 
       return (
         matchesSearchText && matchesOrderType && matchesService && matchesToday
@@ -308,7 +311,7 @@ const SearchRecord = () => {
                   })
                 }
               >
-                {console.log("items", item.customerKyc.Images)}
+                {/* {console.log("items", item.customerKyc.Images)} */}
                 <View style={styles.listItem}>
                   <View style={styles.cardContainer}>
                     {/* Image */}
