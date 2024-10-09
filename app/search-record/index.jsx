@@ -53,9 +53,9 @@ const SearchRecord = () => {
         ? item.orderDetails === orderType
         : true; // If orderType is null, show all records
 
-      const matchesService = isService
-        ? item.isService === isService // Assuming you have an 'isService' field in your data
-        : true; // If isService is false, don't filter by this
+        const matchesService = isService
+        ? item.selectedLocation === "serviceCenter"
+        : true;  // If isService is false, don't filter by this
 
       const matchesToday = isTodayFilter
         ? item.date?.split("T")[0] === today // Check if order date matches today's date
