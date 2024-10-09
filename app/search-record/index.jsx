@@ -21,6 +21,7 @@ import { Button } from "react-native-paper";
 import NotificationComponent, {
   triggerNotification,
 } from "../../components/NotificationConfig";
+import moment from "moment";
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -39,7 +40,7 @@ const SearchRecord = () => {
 
   // Function to handle filtering based on search text, order type, service, and date
   const handleSearch = () => {
-    const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+    const today = new Date(); // Get current date in YYYY-MM-DD format
 
     const filtered = formData.filter((item) => {
       const matchesSearchText =
@@ -58,12 +59,13 @@ const SearchRecord = () => {
         : true; // If isService is false, don't filter by this
 
       // Safely check if today's filter is enabled and date matches
-      const orderDate = item.date ? item.date.split("T")[0] : "";
-      const matchesToday = isTodayFilter 
-      ? orderDate === today  // Compare the formatted order date with today's date
-      : true; // If 'Today' filter is active, check if date matches
+      const orderDate = moment(item.date).format("DD-MMM-YYYY");
+      const TodayDate = moment(today).format("DD-MMM-YYYY");
+      const matchesToday = isTodayFilter
+        ? orderDate === TodayDate // Compare the formatted order date with today's date
+        : true; // If 'Today' filter is active, check if date matches
       console.log("orderDate", orderDate);
-      console.log("today", today);
+      console.log("today", TodayDate);
 
       return (
         matchesSearchText && matchesOrderType && matchesService && matchesToday
@@ -147,38 +149,61 @@ const SearchRecord = () => {
   };
 
   // Push notification
-
+  // Push notification
   useEffect(() => {
     const interval = setInterval(() => {
       const currentDateTime = new Date();
 
       formData.forEach((item) => {
-        // Extract the date and time separately from the form data
-        const itemDate = new Date(item.date).setHours(0, 0, 0, 0); // Set time to midnight to only compare date
-        const itemTime = new Date(item.time); // Compare exact time
+        const itemDate = new Date(item.date);
+        const itemTime = new Date(item.time);
 
-        // Extract the current date and time
-        const currentDate = currentDateTime.setHours(0, 0, 0, 0); // Current date with time set to midnight
-        const currentTime = currentDateTime.getTime(); // Current time in milliseconds
+        const timeDifference = Math.abs(currentDateTime - itemDate) / 60000; // Difference in minutes
 
-        // Check if the date matches
-        if (itemDate === currentDate) {
-          // Calculate time difference in minutes
-          const timeDifference = Math.abs(currentTime - itemTime) / 60000;
-
-          // If the time difference is within 5 minutes, trigger the notification
-          if (timeDifference <= 5) {
-            triggerNotification(
-              ` Order Status: ${item?.orderDetails}`, // Fixed string
-              `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone}`
-            );
-          }
+        if (timeDifference <= 5) {
+          // Trigger if the difference is within 5 minutes
+          triggerNotification(
+            `Order Status: ${item?.orderDetails}`, // Fixed string
+            `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone}`
+          );
         }
       });
-    }, 60000); // Check every minute
+    }, 60000);
 
     return () => clearInterval(interval); // Clean up interval on unmount
-  }, [formData]); // Ensure formData changes are tracked
+  });
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const currentDateTime = new Date();
+
+  //     formData.forEach((item) => {
+  //       // Extract the date and time separately from the form data
+  //       const itemDate = new Date(item.date).setHours(0, 0, 0, 0); // Set time to midnight to only compare date
+  //       const itemTime = new Date(item.time); // Compare exact time
+
+  //       // Extract the current date and time
+  //       const currentDate = currentDateTime.setHours(0, 0, 0, 0); // Current date with time set to midnight
+  //       const currentTime = currentDateTime.getTime(); // Current time in milliseconds
+
+  //       // Check if the date matches
+  //       if (itemDate === currentDate) {
+  //         // Calculate time difference in minutes
+  //         const timeDifference = Math.abs(currentTime - itemTime) / 60000;
+
+  //         // If the time difference is within 5 minutes, trigger the notification
+  //         if (timeDifference <= 5) {
+  //           triggerNotification(
+  //             ` Order Status: ${item?.orderDetails}`, // Fixed string
+  //             `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone}`
+  //           );
+  //         }
+  //       }
+  //     });
+  //   }, 60000); // Check every minute
+
+  //   return () => clearInterval(interval); // Clean up interval on unmount
+  // }, [formData]); // Ensure formData changes are tracked
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>

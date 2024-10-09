@@ -62,19 +62,6 @@ const index = () => {
     getData();
   }, []);
 
-  const handleOperatorFilter = (operatorId) => {
-    const filtered = formData.filter((item) => {
-      // Check if operatorDetails is an array or a string
-      const matchesOperator = value
-      ? item.operatorDetails === value
-      : true; 
-
-      return matchesOperator; // Return true if there's a match
-    });
-
-    setFilteredData(filtered); // Update the filtered data state
-  };
-
   const handleOperatorChange = (operatorId) => {
     console.log("Selected Operator ID:", operatorId); // Log the selected operator ID
     setValue(operatorId);
