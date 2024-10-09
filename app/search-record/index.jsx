@@ -156,7 +156,6 @@ const SearchRecord = () => {
 
       formData.forEach((item) => {
         const itemDate = new Date(item.date);
-        const itemTime = new Date(item.time);
 
         const timeDifference = Math.abs(currentDateTime - itemDate) / 60000; // Difference in minutes
 
@@ -171,39 +170,7 @@ const SearchRecord = () => {
     }, 60000);
 
     return () => clearInterval(interval); // Clean up interval on unmount
-  });
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const currentDateTime = new Date();
-
-  //     formData.forEach((item) => {
-  //       // Extract the date and time separately from the form data
-  //       const itemDate = new Date(item.date).setHours(0, 0, 0, 0); // Set time to midnight to only compare date
-  //       const itemTime = new Date(item.time); // Compare exact time
-
-  //       // Extract the current date and time
-  //       const currentDate = currentDateTime.setHours(0, 0, 0, 0); // Current date with time set to midnight
-  //       const currentTime = currentDateTime.getTime(); // Current time in milliseconds
-
-  //       // Check if the date matches
-  //       if (itemDate === currentDate) {
-  //         // Calculate time difference in minutes
-  //         const timeDifference = Math.abs(currentTime - itemTime) / 60000;
-
-  //         // If the time difference is within 5 minutes, trigger the notification
-  //         if (timeDifference <= 5) {
-  //           triggerNotification(
-  //             ` Order Status: ${item?.orderDetails}`, // Fixed string
-  //             `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone}`
-  //           );
-  //         }
-  //       }
-  //     });
-  //   }, 60000); // Check every minute
-
-  //   return () => clearInterval(interval); // Clean up interval on unmount
-  // }, [formData]); // Ensure formData changes are tracked
+  }, [formData]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
