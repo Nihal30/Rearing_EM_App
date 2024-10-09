@@ -737,7 +737,7 @@ const NewRecord = () => {
                     value={searchText}
                     onChangeText={handleSearchCustomers}
                     style={[styles.input, { width: 190 ,borderColor:"#ccc"}]}
-                    placeholder="Search & Select customers"
+                    placeholder="Search & Select List"
                   />
                   {filteredCustomers.length > 0 && (
                     <View
