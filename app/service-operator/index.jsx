@@ -31,18 +31,7 @@ const index = () => {
   }, [formData]);
 
   const [openService, setOpenService] = useState(false);
-  const getData = async () => {
-    try {
-      const operators = await AsyncStorage.getItem("operators");
-      if (operators !== null) {
-        setItems(
-          JSON.parse(operators).map((op) => ({ label: op.name, value: op.id }))
-        );
-      }
-    } catch (error) {
-      console.error("Failed to load operators", error);
-    }
-  };
+  
   const getOrderStatusStyle = (status) => {
     switch (status) {
       case "Pending":
@@ -55,6 +44,18 @@ const index = () => {
         return styles.canceledStatus;
       default:
         return {}; // Return empty object if no match is found
+    }
+  };
+  const getData = async () => {
+    try {
+      const operators = await AsyncStorage.getItem("operators");
+      if (operators !== null) {
+        setItems(
+          JSON.parse(operators).map((op) => ({ label: op.name, value: op.id }))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to load operators", error);
     }
   };
 

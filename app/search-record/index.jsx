@@ -23,6 +23,9 @@ import NotificationComponent, {
 } from "../../components/NotificationConfig";
 import moment from "moment";
 import Entypo from "@expo/vector-icons/Entypo";
+import DropDownPicker from "react-native-dropdown-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ServiceOperator from "../../components/ServiceOperator";
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -32,7 +35,7 @@ const SearchRecord = () => {
   const [toast, setToast] = useState({ visible: false, message: "", type: "" });
 
   const [orderType, setOrderType] = useState(null); // Initially null for 'All'
-  const [isService, setIsService] = useState(false);
+  const [isService, setIsService] = useState("all");
   const [isTodayFilter, setIsTodayFilter] = useState(false); // State for "Today" filter
 
   useEffect(() => {
@@ -55,16 +58,20 @@ const SearchRecord = () => {
         ? item.orderDetails === orderType
         : true; // If orderType is null, show all records
 
-      const matchesService = isService
-        ? item.selectedLocation === "serviceCenter"
-        : true; // If isService is false, don't filter by this
+      const matchesService =
+        isService === null // If "All" is selected, show all records
+          ? true
+          : isService === "inHouse"
+          ? item.selectedLocation === "inHouse"
+          : isService === "serviceCenter"
+          ? item.selectedLocation === "serviceCenter"
+          : false;
 
       // Safely check if today's filter is enabled and date matches
       const orderDate = moment(item.date).format("DD-MMM-YYYY");
       const TodayDate = moment(today).format("DD-MMM-YYYY");
-      const matchesToday = isTodayFilter
-        ? orderDate === TodayDate // Compare the formatted order date with today's date
-        : true; // If 'Today' filter is active, check if date matches
+      const matchesToday =
+        isTodayFilter === true ? orderDate === TodayDate : true; // If 'Today' filter is active, check if date matches
       console.log("orderDate", orderDate);
       console.log("today", TodayDate);
 
@@ -173,6 +180,57 @@ const SearchRecord = () => {
     return () => clearInterval(interval); // Clean up interval on unmount
   });
 
+  // Oprater changes
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("all");
+  const [items, setItems] = useState([]);
+  const [openService, setOpenService] = useState(false);
+  // const [filteredData, setFilteredData] = useState(formData || []);
+  const getData = async () => {
+    try {
+      const operators = await AsyncStorage.getItem("operators");
+      if (operators !== null) {
+        setItems([
+          { label: "All", value: "all" }, // Add "All" option
+          ...JSON.parse(operators).map((op) => ({
+            label: op.name,
+            value: op.id,
+          })),
+        ]);
+      }
+    } catch (error) {
+      console.error("Failed to load operators", error);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const handleOperatorChange = (operatorId) => {
+    console.log("Selected Operator ID:", operatorId);
+    setValue(operatorId);
+
+    const filtered = formData.filter((item) => {
+      // Show all data if "All" is selected
+      const matchesOperator =
+        operatorId === "all" ? true : item.operatorDetails === operatorId;
+      return matchesOperator;
+    });
+
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    const filtered = formData.filter((item) => {
+      const matchesOperator =
+        value === "all" ? true : item.operatorDetails === value;
+      return matchesOperator;
+    });
+
+    setFilteredData(filtered);
+  }, [value]);
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
@@ -224,6 +282,47 @@ const SearchRecord = () => {
         </TouchableOpacity>
       </View>
 
+      <View
+        style={{
+          marginVertical: 10,
+          marginHorizontal: 10,
+          flexDirection: "row",
+          gap: 10,
+        }}
+      >
+        <View>
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={handleOperatorChange}
+            setItems={setItems}
+            placeholder="Select Operator"
+            style={[styles.picker]}
+            dropDownContainerStyle={styles.dropdownContainer}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            {
+              height: 50,
+              width: 70,
+              borderRadius: 10,
+              backgroundColor: "#ccc",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#DE3163",
+            },
+          ]}
+          onPress={() => setOpenService(true)}
+        >
+          <Text style={styles.buttonText}>List</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Filters */}
       <View
         style={{
@@ -237,7 +336,7 @@ const SearchRecord = () => {
             borderWidth: 1,
             borderColor: "#ccc",
             borderRadius: 10,
-            width: 150,
+            width: 130,
             height: 45,
             alignItems: "center",
             justifyContent: "center",
@@ -258,6 +357,28 @@ const SearchRecord = () => {
 
         <View
           style={{
+            borderWidth: 1,
+            borderColor: "#ccc",
+            borderRadius: 10,
+            width: 130,
+            height: 45,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <RNPickerSelect
+            onValueChange={(value) => setIsService(value)}
+            items={[
+              { label: "All", value: null },
+              { label: "House", value: "inHouse" },
+              { label: "Service Center", value: "serviceCenter" },
+            ]}
+            placeholder={{ label: "Select Order Type", value: null }}
+          />
+        </View>
+
+        {/* <View
+          style={{
             alignItems: "center",
             justifyContent: "center",
             flexDirection: "row",
@@ -269,7 +390,7 @@ const SearchRecord = () => {
             value={isService}
             onValueChange={(value) => setIsService(value)}
           />
-        </View>
+        </View> */}
 
         <Button
           style={{ backgroundColor: isTodayFilter ? "#DE3163" : "#E5E4E2" }} // Highlight if active
@@ -409,6 +530,10 @@ const SearchRecord = () => {
           visible={toast.visible}
         />
       )}
+      <ServiceOperator
+        visible={openService}
+        onClose={() => setOpenService(false)}
+      />
     </View>
   );
 };
@@ -416,6 +541,10 @@ const SearchRecord = () => {
 export default SearchRecord;
 
 const styles = StyleSheet.create({
+  dropdownContainer: {
+    width: 280,
+    borderColor: "#ccc",
+  },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -504,6 +633,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 10,
   },
+
   deliveredStatus: {
     color: "#fff", // blue
     backgroundColor: "#0000ff",
@@ -578,5 +708,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
+  },
+  picker: {
+    width: 280,
+    borderColor: "#ccc",
   },
 });

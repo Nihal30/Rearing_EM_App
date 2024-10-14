@@ -56,7 +56,7 @@ const NewRecord = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success"); // 'success' or 'error'
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState('Pending');
   const [items, setItems] = useState([
     { label: "Pending", value: "Pending" },
     { label: "Repaired", value: "Repaired" },
@@ -429,7 +429,7 @@ const NewRecord = () => {
     setToastMessage("");
     setToastType("success");
     setOpen(false);
-    setValue(null);
+    setValue('Pending');
     setModel("");
     setItems([
       { label: "Laptop", value: "Laptop" },
@@ -1677,6 +1677,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     width: "100%",
     marginTop: 5, // Adjust the margin to position it just below the picker
+    borderColor:"#ccc"
   },
   customerDetails: {
     flex: 1,
