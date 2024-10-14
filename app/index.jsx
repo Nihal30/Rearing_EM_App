@@ -415,7 +415,7 @@ const SearchRecord = () => {
 
       <View
         style={{
-          marginVertical: 10,
+          marginBottom:10,
           marginHorizontal: 10,
           flexDirection: "row",
           gap: 10,
@@ -467,7 +467,7 @@ const SearchRecord = () => {
             borderWidth: 1,
             borderColor: "#ccc",
             borderRadius: 10,
-            width: 130,
+            width: 140,
             height: 45,
             alignItems: "center",
             justifyContent: "center",
@@ -476,7 +476,7 @@ const SearchRecord = () => {
           <RNPickerSelect
             onValueChange={(value) => setOrderType(value)}
             items={[
-              { label: "All", value: null },
+              { label: "Order Type", value: null },
               { label: "Pending", value: "Pending" },
               { label: "Repaired", value: "Repaired" },
               { label: "Delivered", value: "Delivered" },
@@ -491,7 +491,7 @@ const SearchRecord = () => {
             borderWidth: 1,
             borderColor: "#ccc",
             borderRadius: 10,
-            width: 130,
+            width: 140,
             height: 45,
             alignItems: "center",
             justifyContent: "center",
@@ -500,7 +500,7 @@ const SearchRecord = () => {
           <RNPickerSelect
             onValueChange={(value) => setIsService(value)}
             items={[
-              { label: "All", value: null },
+              { label: "Location", value: null },
               { label: "House", value: "inHouse" },
               { label: "Service Center", value: "serviceCenter" },
             ]}
