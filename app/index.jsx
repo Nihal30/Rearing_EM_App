@@ -165,7 +165,7 @@ const SearchRecord = () => {
   const [toast, setToast] = useState({ visible: false, message: "", type: "" });
 
   const [orderType, setOrderType] = useState(null); // Initially null for 'All'
-  const [isService, setIsService] = useState("all");
+  const [isService, setIsService] = useState(null);
   const [isTodayFilter, setIsTodayFilter] = useState(false); // State for "Today" filter
 
   useEffect(() => {
@@ -335,6 +335,7 @@ const SearchRecord = () => {
 
   useEffect(() => {
     getData();
+    
   }, []);
 
   const handleOperatorChange = (operatorId) => {
