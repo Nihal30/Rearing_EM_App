@@ -22,6 +22,7 @@ import NotificationComponent, {
   triggerNotification,
 } from "../../components/NotificationConfig";
 import moment from "moment";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -391,6 +392,12 @@ const SearchRecord = () => {
             )}
           />
         )}
+        <TouchableOpacity
+          style={styles.floatingButton}
+          onPress={() => router.push("/records")}
+        >
+          <Entypo name="add-to-list" size={25} color="#fff" />
+        </TouchableOpacity>
       </View>
       {/* </ScrollView> */}
 
@@ -555,5 +562,21 @@ const styles = StyleSheet.create({
   valueText: {
     fontFamily: "outfit-regular",
     fontSize: 16,
+  },
+  floatingButton: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    backgroundColor: "#DE3163",
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    bottom: 20,
+    right: 20,
+    elevation: 5, // For Android shadow
+    shadowColor: "#000", // For iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
 });
