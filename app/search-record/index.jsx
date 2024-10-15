@@ -32,6 +32,7 @@ const SearchRecord = () => {
   const [searchText, setSearchText] = useState("");
   const { formData, deleteData } = useContext(FormDataContext);
   const [filteredData, setFilteredData] = useState(formData);
+  const [operatorId, setOperatorId] = useState("all");
   const [toast, setToast] = useState({ visible: false, message: "", type: "" });
 
   const [orderType, setOrderType] = useState(null); // Initially null for 'All'
@@ -66,6 +67,11 @@ const SearchRecord = () => {
           : isService === "serviceCenter"
           ? item.selectedLocation === "serviceCenter"
           : false;
+          // console.log('item', item)
+          // console.log('valueOperator', valueOperator)
+
+          const matchesOperator =
+          valueOperator === "all" ? true : item.operatorDetails === valueOperator; // If "All" is selected, show all records
 
       // Safely check if today's filter is enabled and date matches
       const orderDate = moment(item.date).format("DD-MMM-YYYY");
@@ -76,7 +82,7 @@ const SearchRecord = () => {
       console.log("today", TodayDate);
 
       return (
-        matchesSearchText && matchesOrderType && matchesService && matchesToday
+        matchesSearchText && matchesOrderType && matchesService && matchesToday && matchesOperator
       );
     });
 
@@ -85,7 +91,7 @@ const SearchRecord = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [orderType, isService, isTodayFilter]);
+  }, [orderType, isService, isTodayFilter,valueOperator]);
 
   // Function to get styles for different order statuses
   const getOrderStatusStyle = (status) => {
@@ -182,7 +188,7 @@ const SearchRecord = () => {
 
   // Oprater changes
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("all");
+  const [valueOperator, setValueOperator] = useState("all");
   const [items, setItems] = useState([]);
   const [openService, setOpenService] = useState(false);
   // const [filteredData, setFilteredData] = useState(formData || []);
@@ -209,27 +215,27 @@ const SearchRecord = () => {
 
   const handleOperatorChange = (operatorId) => {
     console.log("Selected Operator ID:", operatorId);
-    setValue(operatorId);
+    setValueOperator(operatorId);
 
-    const filtered = formData.filter((item) => {
-      // Show all data if "All" is selected
-      const matchesOperator =
-        operatorId === "all" ? true : item.operatorDetails === operatorId;
-      return matchesOperator;
-    });
+    // const filtered = formData.filter((item) => {
+    //   // Show all data if "All" is selected
+    //   const matchesOperator =
+    //     operatorId === "all" ? true : item.operatorDetails === operatorId;
+    //   return matchesOperator;
+    // });
 
-    setFilteredData(filtered);
+    // setFilteredData(filtered);
   };
 
-  useEffect(() => {
-    const filtered = formData.filter((item) => {
-      const matchesOperator =
-        value === "all" ? true : item.operatorDetails === value;
-      return matchesOperator;
-    });
+  // useEffect(() => {
+  //   const filtered = formData.filter((item) => {
+  //     const matchesOperator =
+  //       value === "all" ? true : item.operatorDetails === value;
+  //     return matchesOperator;
+  //   });
 
-    setFilteredData(filtered);
-  }, [value]);
+  //   setFilteredData(filtered);
+  // }, [value]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -293,7 +299,7 @@ const SearchRecord = () => {
         <View>
           <DropDownPicker
             open={open}
-            value={value}
+            value={valueOperator}
             items={items}
             setOpen={setOpen}
             setValue={handleOperatorChange}
