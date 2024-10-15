@@ -56,7 +56,8 @@ const NewRecord = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success"); // 'success' or 'error'
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('Pending');
+  const [value, setValue] = useState("Pending");
+
   const [items, setItems] = useState([
     { label: "Pending", value: "Pending" },
     { label: "Repaired", value: "Repaired" },
@@ -81,6 +82,7 @@ const NewRecord = () => {
   const [barcode, setBarcode] = useState("");
   const [isScannerVisible, setScannerVisible] = useState(false);
   const [problemList, setProblemList] = useState([]);
+  console.log("problemList", problemList);
   const [customerList, setCustomerList] = useState([]);
   const [previous, setPrevious] = useState(null);
   const [customerKyc, setCustomerKyc] = useState({});
@@ -236,6 +238,13 @@ const NewRecord = () => {
     try {
       console.log("Preparing to download PDF...");
 
+      // Generate HTML list items from the problems array
+      // Check if problems array is defined and not empty
+      const problem =
+        Array.isArray(problemList) && problemList.length > 0
+          ? problemList.map((problem) => `<li>${problem?.text}</li>`).join("")
+          : "<li>No problems listed.</li>";
+
       // Prepare HTML content for the PDF
       const htmlContent = `
         <html>
@@ -244,16 +253,23 @@ const NewRecord = () => {
               body { font-family: Arial, sans-serif; }
               h1 { color: #DE3163; }
               p { margin: 5px 0; }
+              ul { padding-left: 20px; }
+              li { margin: 3px 0; }
             </style>
           </head>
           <body>
             <h1>Record Details</h1>
-            <p><strong>Customer Model:</strong> ${customerModel}</p>
-            <p><strong>Problems:</strong> ${problems}</p>
-            <p><strong>Price:</strong> ${price}</p>
-            <p><strong>Paid:</strong> ${paid}</p>
-            <p><strong>Lock Code:</strong> ${lockCode}</p>
-            <p><strong>Barcode:</strong> ${barcode}</p>
+            <p><strong>Order Status: </strong>${value}</p>
+            <p><strong>Customer Name: </strong>${customerList[0].name}</p>
+            <p><strong>Customer Phone: </strong>${customerList[0].phone}</p>
+            <p><strong>Customer Address: </strong>${customerList[0].address}</p>
+            <p><strong>Model: </strong>${model}</p>
+            <p><strong>Problems: </strong></p>
+            <ul>${problem}</ul>
+            <p><strong>Price: </strong>${price}</p>
+            <p><strong>Paid: </strong>${paid}</p>
+            <p><strong>Lock Code: </strong>${lockCode}</p>
+            <p><strong>Barcode: </strong>${barcode}</p>
           </body>
         </html>
       `;
@@ -429,7 +445,7 @@ const NewRecord = () => {
     setToastMessage("");
     setToastType("success");
     setOpen(false);
-    setValue('Pending');
+    setValue("Pending");
     setModel("");
     setItems([
       { label: "Laptop", value: "Laptop" },
@@ -501,8 +517,12 @@ const NewRecord = () => {
                 "previousFormData?.serviceDate",
                 previousFormData?.serviceDate
               );
-              setTimeService(new Date(previousFormData?.serviceTime) || new Date());
-              setDateService(new Date(previousFormData?.serviceDate) || new Date());
+              setTimeService(
+                new Date(previousFormData?.serviceTime) || new Date()
+              );
+              setDateService(
+                new Date(previousFormData?.serviceDate) || new Date()
+              );
             } else if (location === "inHouse") {
               // Optionally clear service center details if inHouse is selected
               setContactNo("");
@@ -638,24 +658,24 @@ const NewRecord = () => {
 
         {/* Form */}
         <ScrollView style={styles.formContainer} scrollEnabled={!openOperator}>
-          <View >
+          <View>
             {/* Dropdown for Order Details */}
             <Text style={styles.label}>Order Details:</Text>
-            <View style={{zIndex:100000}}>
-            <DropDownPicker
-              open={open}
-              value={value}
-              items={items}
-              setOpen={setOpen}
-              setValue={setValue}
-              setItems={setItems}
-              placeholder="Select Order"
-              style={[
-                styles.picker,
-                validation.orderError && styles.errorInput,
-              ]}
-              dropDownContainerStyle={styles.dropdownContainer}
-            />
+            <View style={{ zIndex: 100000 }}>
+              <DropDownPicker
+                open={open}
+                value={value}
+                items={items}
+                setOpen={setOpen}
+                setValue={setValue}
+                setItems={setItems}
+                placeholder="Select Order"
+                style={[
+                  styles.picker,
+                  validation.orderError && styles.errorInput,
+                ]}
+                dropDownContainerStyle={styles.dropdownContainer}
+              />
             </View>
             {validation.orderError && (
               <Text style={{ margin: 10, color: "red" }}>
@@ -666,7 +686,7 @@ const NewRecord = () => {
             <View
               style={[
                 styles.customerDetails,
-                { borderRadius: 10, marginTop: 10 ,zIndex:5000},
+                { borderRadius: 10, marginTop: 10, zIndex: 5000 },
                 validation.customerError && styles.errorInput,
               ]}
             >
@@ -736,7 +756,7 @@ const NewRecord = () => {
                   <TextInput
                     value={searchText}
                     onChangeText={handleSearchCustomers}
-                    style={[styles.input, { width: 190 ,borderColor:"#ccc"}]}
+                    style={[styles.input, { width: 190, borderColor: "#ccc" }]}
                     placeholder="Search & Select List"
                   />
                   {filteredCustomers.length > 0 && (
@@ -1200,7 +1220,7 @@ const NewRecord = () => {
             <View
               style={[
                 styles.customerDetails,
-                { borderRadius: 10, marginTop: 10 ,zIndex: 500 },
+                { borderRadius: 10, marginTop: 10, zIndex: 500 },
               ]}
             >
               <TextInput
@@ -1222,17 +1242,15 @@ const NewRecord = () => {
                   setValue={setValueOperator}
                   setItems={setOperator}
                   placeholder="Select Operator"
-                  style={[styles.picker,]}
+                  style={[styles.picker]}
                   dropDownContainerStyle={[
                     styles.dropdownContainer,
                     {
-                      height:200,
+                      height: 200,
                       borderColor: "#ccc",
 
                       position: "absolute",
                       zIndex: 1000,
-
-                      
                     },
                   ]}
                   // Specify direction if necessary
@@ -1612,7 +1630,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     // marginBottom: 10,
-    borderColor:"#ccc"
+    borderColor: "#ccc",
   },
   picker: {
     height: 50,
@@ -1677,7 +1695,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     width: "100%",
     marginTop: 5, // Adjust the margin to position it just below the picker
-    borderColor:"#ccc"
+    borderColor: "#ccc",
   },
   customerDetails: {
     flex: 1,

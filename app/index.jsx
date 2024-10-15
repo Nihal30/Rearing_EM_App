@@ -6,7 +6,7 @@
 
 // export default function Index() {
 //   const router = useRouter()
-  
+
 //   return (
 //     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
 //       {/* Header */}
@@ -29,8 +29,6 @@
 //         </Text>
 //       </View>
 
-      
-
 //       {/* Body */}
 //       <View
 //         style={{
@@ -38,7 +36,7 @@
 //           justifyContent: "center",
 //           alignItems: "center",
 //           marginTop:-200,
-        
+
 //         }}
 //       >
 //          {/* Hero Image */}
@@ -335,7 +333,6 @@ const SearchRecord = () => {
 
   useEffect(() => {
     getData();
-    
   }, []);
 
   const handleOperatorChange = (operatorId) => {
@@ -415,10 +412,11 @@ const SearchRecord = () => {
 
       <View
         style={{
-          marginBottom:10,
+          marginBottom: 10,
           marginHorizontal: 10,
           flexDirection: "row",
-          gap: 10,
+
+          justifyContent: "space-betweens",
         }}
       >
         <View>
@@ -430,27 +428,19 @@ const SearchRecord = () => {
             setValue={handleOperatorChange}
             setItems={setItems}
             placeholder="Select Operator"
-            style={[styles.picker]}
+            style={[styles.picker, { minHeight: 40, width: 290 }]}
             dropDownContainerStyle={styles.dropdownContainer}
           />
         </View>
 
         <TouchableOpacity
           style={[
-            styles.button,
-            {
-              height: 50,
-              width: 70,
-              borderRadius: 10,
-              backgroundColor: "#ccc",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "#DE3163",
-            },
+            styles.searchButton,
+            { width: 65, height: 40, alignItems: "center" },
           ]}
           onPress={() => setOpenService(true)}
         >
-          <Text style={styles.buttonText}>List</Text>
+          <Text style={[styles.buttonText, { fontSize: 15 }]}>List</Text>
         </TouchableOpacity>
       </View>
 
@@ -468,7 +458,7 @@ const SearchRecord = () => {
             borderColor: "#ccc",
             borderRadius: 10,
             width: 140,
-            height: 45,
+            height: 40,
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -476,13 +466,13 @@ const SearchRecord = () => {
           <RNPickerSelect
             onValueChange={(value) => setOrderType(value)}
             items={[
-              { label: "Order Type", value: null },
+              // { label: "Order Type", value: null },
               { label: "Pending", value: "Pending" },
               { label: "Repaired", value: "Repaired" },
               { label: "Delivered", value: "Delivered" },
               { label: "Canceled", value: "Canceled" },
             ]}
-            placeholder={{ label: "Select Order Type", value: null }}
+            placeholder={{ label: "Order Type", value: null }}
           />
         </View>
 
@@ -492,7 +482,7 @@ const SearchRecord = () => {
             borderColor: "#ccc",
             borderRadius: 10,
             width: 140,
-            height: 45,
+            height: 40,
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -500,11 +490,11 @@ const SearchRecord = () => {
           <RNPickerSelect
             onValueChange={(value) => setIsService(value)}
             items={[
-              { label: "Location", value: null },
+              // { label: "Location", value: null },
               { label: "House", value: "inHouse" },
               { label: "Service Center", value: "serviceCenter" },
             ]}
-            placeholder={{ label: "Select Order Type", value: null }}
+            placeholder={{ label: "Location", value: null }}
           />
         </View>
 
@@ -659,6 +649,7 @@ const SearchRecord = () => {
           message={toast.message}
           type={toast.type}
           visible={toast.visible}
+          onClose={() => setToast({ visible: false })}
         />
       )}
       <ServiceOperator
@@ -673,7 +664,7 @@ export default SearchRecord;
 
 const styles = StyleSheet.create({
   dropdownContainer: {
-    width: 280,
+    width: 290,
     borderColor: "#ccc",
   },
   searchContainer: {
@@ -692,6 +683,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingLeft: 40,
+    width:290
   },
   searchButton: {
     backgroundColor: "#DE3163",
@@ -845,4 +837,3 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
   },
 });
-

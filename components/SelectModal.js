@@ -158,7 +158,7 @@ const SelectModelDialog = ({
           </TouchableOpacity>
         </View>
       </View>
-      <Toast message={toast.message} visible={toast?.visible} type={toast.type} onClose={() => setToastVisible(false)} />
+      <Toast message={toast.message} visible={toast?.visible} type={toast.type} onClose={() => setToast({visible: false})} />
 
     </Modal>
   );
