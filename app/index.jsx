@@ -156,7 +156,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ServiceOperator from "../components/ServiceOperator";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-
 const SearchRecord = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
@@ -310,55 +309,54 @@ const SearchRecord = () => {
   });
 
   // Push notification for "repaired" orders twice a day
-useEffect(() => {
-  const sendRepairedNotification = () => {
-    formData.forEach((item) => {
-      if (item.orderDetails === "repaired") {
-        triggerNotification(
-          `Reminder: Order Status - ${item.orderDetails}`,
-          `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone}`
-        );
+  useEffect(() => {
+    const sendRepairedNotification = () => {
+      formData.forEach((item) => {
+        if (item.orderDetails === "repaired") {
+          triggerNotification(
+            `Reminder: Order Status - ${item.orderDetails}`,
+            `Name/Phone: ${item.customerDetails.customerList[0].name} / ${item.customerDetails.customerList[0].phone}`
+          );
+        }
+      });
+    };
+
+    // Set up notifications to be sent twice a day at 10 AM and 3 PM
+    const notificationTimes = [10, 15]; // Hours of the day for notifications (24-hour format)
+    const now = new Date();
+
+    const nextNotificationTime = new Date();
+    nextNotificationTime.setMinutes(0);
+    nextNotificationTime.setSeconds(0);
+    nextNotificationTime.setMilliseconds(0);
+
+    const checkAndScheduleNext = () => {
+      // Find the next notification time
+      for (let i = 0; i < notificationTimes.length; i++) {
+        nextNotificationTime.setHours(notificationTimes[i]);
+        if (now < nextNotificationTime) {
+          const timeUntilNext = nextNotificationTime - now;
+          return setTimeout(() => {
+            sendRepairedNotification();
+            checkAndScheduleNext(); // Schedule the next one
+          }, timeUntilNext);
+        }
       }
-    });
-  };
 
-  // Set up notifications to be sent twice a day at 10 AM and 3 PM
-  const notificationTimes = [10, 15]; // Hours of the day for notifications (24-hour format)
-  const now = new Date();
+      // If all scheduled times for today have passed, schedule for the next day
+      nextNotificationTime.setDate(now.getDate() + 1);
+      nextNotificationTime.setHours(notificationTimes[0]);
+      const timeUntilNext = nextNotificationTime - now;
+      return setTimeout(() => {
+        sendRepairedNotification();
+        checkAndScheduleNext(); // Schedule the next one
+      }, timeUntilNext);
+    };
 
-  const nextNotificationTime = new Date();
-  nextNotificationTime.setMinutes(0);
-  nextNotificationTime.setSeconds(0);
-  nextNotificationTime.setMilliseconds(0);
+    const timeoutId = checkAndScheduleNext();
 
-  const checkAndScheduleNext = () => {
-    // Find the next notification time
-    for (let i = 0; i < notificationTimes.length; i++) {
-      nextNotificationTime.setHours(notificationTimes[i]);
-      if (now < nextNotificationTime) {
-        const timeUntilNext = nextNotificationTime - now;
-        return setTimeout(() => {
-          sendRepairedNotification();
-          checkAndScheduleNext(); // Schedule the next one
-        }, timeUntilNext);
-      }
-    }
-
-    // If all scheduled times for today have passed, schedule for the next day
-    nextNotificationTime.setDate(now.getDate() + 1);
-    nextNotificationTime.setHours(notificationTimes[0]);
-    const timeUntilNext = nextNotificationTime - now;
-    return setTimeout(() => {
-      sendRepairedNotification();
-      checkAndScheduleNext(); // Schedule the next one
-    }, timeUntilNext);
-  };
-
-  const timeoutId = checkAndScheduleNext();
-
-  return () => clearTimeout(timeoutId); // Clean up timeout on unmount
-}, [formData]);
-
+    return () => clearTimeout(timeoutId); // Clean up timeout on unmount
+  }, [formData]);
 
   // Oprater changes
   const [open, setOpen] = useState(false);
