@@ -233,17 +233,93 @@ const NewRecord = () => {
       }`
     );
   };
+  console.log('customerKyc.Images[0]?.uri', customerKyc.Images[0]?.uri)
+
+  // const handlePrint = async () => {
+  //   try {
+  //     console.log("Preparing to download PDF...");
+
+  //     // Generate HTML list items from the problems array
+  //     // Check if problems array is defined and not empty
+  //     const problem =
+  //       Array.isArray(problemList) && problemList.length > 0
+  //         ? problemList.map((problem) => `<li>${problem?.text}</li>`).join("")
+  //         : "<li>No problems listed.</li>";
+
+  //     // Prepare HTML content for the PDF
+  //     const htmlContent = `
+  //       <html>
+  //         <head>
+  //           <style>
+  //             body { font-family: Arial, sans-serif; }
+  //             h1 { color: #DE3163; }
+  //             p { margin: 5px 0; }
+  //             ul { padding-left: 20px; }
+  //             li { margin: 3px 0; }
+  //           </style>
+  //         </head>
+  //         <body>
+  //           <h1>Record Details</h1>
+  //           <p><strong>Order Status: </strong>${value}</p>
+  //           <p><strong>Customer Name: </strong>${customerList[0].name}</p>
+  //           <p><strong>Customer Phone: </strong>${customerList[0].phone}</p>
+  //           <p><strong>Customer Address: </strong>${customerList[0].address}</p>
+  //           <p><strong>Model: </strong>${model}</p>
+  //           <p><strong>Problems: </strong></p>
+  //           <ul>${problem}</ul>
+  //           <p><strong>Price: </strong>${price}</p>
+  //           <p><strong>Paid: </strong>${paid}</p>
+  //           <p><strong>Lock Code: </strong>${lockCode}</p>
+  //           <p><strong>Barcode: </strong>${barcode}</p>
+  //         </body>
+  //       </html>
+  //     `;
+
+  //     // Generate PDF from the HTML content
+  //     const { uri } = await Print.printToFileAsync({ html: htmlContent });
+
+  //     console.log("PDF generated at temporary URI:", uri);
+
+  //     // Move the generated PDF to a new location if desired
+  //     const fileUri = `${FileSystem.documentDirectory}record.pdf`;
+  //     await FileSystem.moveAsync({ from: uri, to: fileUri });
+
+  //     console.log("PDF downloaded to:", fileUri);
+
+  //     // Open or share the PDF
+  //     if (await Sharing.isAvailableAsync()) {
+  //       await Sharing.shareAsync(fileUri);
+  //     } else {
+  //       console.log("Sharing is not available on this device.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error generating PDF:", error);
+  //   }
+  // };
 
   const handlePrint = async () => {
     try {
       console.log("Preparing to download PDF...");
 
       // Generate HTML list items from the problems array
-      // Check if problems array is defined and not empty
       const problem =
         Array.isArray(problemList) && problemList.length > 0
           ? problemList.map((problem) => `<li>${problem?.text}</li>`).join("")
           : "<li>No problems listed.</li>";
+
+      // Check if customerKyc.Images is an array and has elements
+    const imageUri = Array.isArray(customerKyc?.Images) && customerKyc.Images[0]?.uri;
+    let base64Image = '';
+    if (imageUri) {
+      try {
+        base64Image = await FileSystem.readAsStringAsync(imageUri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        base64Image = `data:image/jpeg;base64,${base64Image}`;
+      } catch (error) {
+        console.error("Error reading image file:", error);
+      }
+    }
 
       // Prepare HTML content for the PDF
       const htmlContent = `
@@ -255,27 +331,57 @@ const NewRecord = () => {
               p { margin: 5px 0; }
               ul { padding-left: 20px; }
               li { margin: 3px 0; }
+              img { max-width: 100%; height: 200; margin: 10px 0; }
             </style>
           </head>
           <body>
             <h1>Record Details</h1>
-            <p><strong>Order Status: </strong>${value}</p>
-            <p><strong>Customer Name: </strong>${customerList[0].name}</p>
-            <p><strong>Customer Phone: </strong>${customerList[0].phone}</p>
-            <p><strong>Customer Address: </strong>${customerList[0].address}</p>
-            <p><strong>Model: </strong>${model}</p>
-            <p><strong>Problems: </strong></p>
+             ${base64Image ? `<img src="${base64Image}" alt="Image" />` : '<p>No image available</p>'}
+            <p><strong>${formDataId}</strong></p>
+            <p><strong>Order Status : </strong>${value}</p>
+            <p><strong>Customer Name : </strong>${customerList[0].name}</p>
+            <p><strong>Customer Phone : </strong>${customerList[0].phone}</p>
+            <p><strong>Customer Address : </strong>${
+              customerList[0].address
+            }</p>
+            <p><strong>Model : </strong>${model}</p>
+            <p><strong>Problems : </strong></p>
             <ul>${problem}</ul>
-            <p><strong>Price: </strong>${price}</p>
-            <p><strong>Paid: </strong>${paid}</p>
-            <p><strong>Lock Code: </strong>${lockCode}</p>
-            <p><strong>Barcode: </strong>${barcode}</p>
+            <p><strong>Price : </strong>${price}</p>
+            <p><strong>Paid : </strong>${paid}</p>
+            <p><strong>Lock Code : </strong>${lockCode}</p>
+            <p><strong>Barcode : </strong>${barcode}</p>
+            <p><strong>Due Date : </strong>${moment(date).format(
+              "DD MMM YYYY"
+            )}</p>
+            <p><strong>Power Adapter :</strong>${
+              isPowerSelected ? "Yes" : "No"
+            }</p>
+            <p><strong>Keyboard/Mouse : </strong>${
+              isKeyboardSelected ? "Yes" : "No"
+            }</p>
+            <p><strong>Other Device : </strong>${
+              isOtherDeviceSelected ? "Yes" : "No"
+            }</p>
+            <p><strong>Name of Receiver : </strong>${owner}</p>
+            <p><strong>Operator : </strong>${owner}</p>
+            <p><strong>Location : </strong>${
+              selectedLocation === "inHouse" ? "In House" : "Service Center"
+            }</p>
+            <p><strong>Additional Details : </strong>${additionalDetails}</p>
+            <p><strong>Device Warranty : </strong>${deviceWarranty}</p>
+
           </body>
         </html>
       `;
 
-      // Generate PDF from the HTML content
-      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      // Generate PDF from the HTML content, specifying the paper size
+      const { uri } = await Print.printToFileAsync({
+        html: htmlContent,
+        width: 595, // A4 width in points (1/72 of an inch)
+        height: 842, // A4 height in points
+        base64: false, // Set to true if you need a base64 encoded string
+      });
 
       console.log("PDF generated at temporary URI:", uri);
 
@@ -477,6 +583,7 @@ const NewRecord = () => {
           console.log("previousFormData", previousFormData);
 
           if (previousFormData) {
+            setFormDataId(previousFormData?.id);
             setValue(previousFormData?.orderDetails);
             setValueOperator(previousFormData?.operatorDetails);
             setCustomerList(previousFormData?.customerDetails?.customerList);

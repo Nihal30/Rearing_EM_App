@@ -154,6 +154,8 @@ import Entypo from "@expo/vector-icons/Entypo";
 import DropDownPicker from "react-native-dropdown-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ServiceOperator from "../components/ServiceOperator";
+import AntDesign from "@expo/vector-icons/AntDesign";
+
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -370,12 +372,6 @@ const SearchRecord = () => {
           padding: 10,
         }}
       >
-        {/* <TouchableOpacity
-          style={{ marginTop: 40, marginLeft: 10 }}
-          onPress={() => router.back()}
-        >
-          <Icon name="arrow-back" size={25} color="#ffffff" />
-        </TouchableOpacity> */}
         <Text
           style={{
             color: "#ffffff",
@@ -383,11 +379,21 @@ const SearchRecord = () => {
             fontSize: 20,
             flex: 1,
             textAlign: "center",
-            marginTop: 40,
+            marginTop: 35,
           }}
         >
           ALL RECORDS
         </Text>
+        <TouchableOpacity
+          style={{
+            marginTop: 35,
+            backgroundColor: "#fff",
+            padding: 5,
+            borderRadius: 10,
+          }}
+        >
+          <AntDesign name="arrowdown" size={24} color="#000" />
+        </TouchableOpacity>
       </View>
 
       {/* Search Input with Icon */}
@@ -578,7 +584,10 @@ const SearchRecord = () => {
                         </Text>
                       </View>
 
-                      {/* Customer Name */}
+                      <View style={styles.titleValueContainer}>
+                        <Text style={styles.valueText}>{item.id}</Text>
+                      </View>
+
                       {item?.customerDetails?.customerList?.length > 0 && (
                         <View style={styles.titleValueContainer}>
                           <Text style={styles.titleText}>Customer Name:</Text>
@@ -683,7 +692,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingLeft: 40,
-    width:290
+    width: 290,
   },
   searchButton: {
     backgroundColor: "#DE3163",
