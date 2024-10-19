@@ -233,7 +233,7 @@ const NewRecord = () => {
       }`
     );
   };
-  console.log('customerKyc.Images[0]?.uri', customerKyc.Images[0]?.uri)
+  
 
   // const handlePrint = async () => {
   //   try {
