@@ -444,7 +444,7 @@ const NewRecord = () => {
 
     const newFormData = {
       id: formDataId || generateCustomId(), // Use existing ID if available, otherwise generate a new one
-      currentDate: currentDateString,
+      currentDate: new Date(),
       orderDetails: value,
       operatorDetails: valueOperator,
       customerDetails: {

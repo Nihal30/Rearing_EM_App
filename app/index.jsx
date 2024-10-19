@@ -155,6 +155,8 @@ import DropDownPicker from "react-native-dropdown-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ServiceOperator from "../components/ServiceOperator";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import Feather from "@expo/vector-icons/Feather";
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -167,13 +169,55 @@ const SearchRecord = () => {
   const [isService, setIsService] = useState(null);
   const [isTodayFilter, setIsTodayFilter] = useState(false); // State for "Today" filter
 
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   useEffect(() => {
     setFilteredData(formData); // Display all data initially
   }, [formData]);
 
   // Function to handle filtering based on search text, order type, service, and date
+  // const handleSearch = () => {
+  //   const today = new Date(); // Get current date in YYYY-MM-DD format
+
+  //   const filtered = formData.filter((item) => {
+  //     const matchesSearchText =
+  //       item.orderDetails.toLowerCase().includes(searchText.toLowerCase()) ||
+  //       item.customerDetails?.customerList[0]?.name
+  //         .toLowerCase()
+  //         .includes(searchText.toLowerCase()) ||
+  //       false;
+
+  //     const matchesOrderType = orderType
+  //       ? item.orderDetails === orderType
+  //       : true; // If orderType is null, show all records
+
+  //     const matchesService =
+  //       isService === null // If "All" is selected, show all records
+  //         ? true
+  //         : isService === "inHouse"
+  //         ? item.selectedLocation === "inHouse"
+  //         : isService === "serviceCenter"
+  //         ? item.selectedLocation === "serviceCenter"
+  //         : false;
+
+  //     // Safely check if today's filter is enabled and date matches
+  //     const orderDate = moment(item.date).format("DD-MMM-YYYY");
+  //     const TodayDate = moment(today).format("DD-MMM-YYYY");
+  //     const matchesToday =
+  //       isTodayFilter === true ? orderDate === TodayDate : true; // If 'Today' filter is active, check if date matches
+  //     console.log("orderDate", orderDate);
+  //     console.log("today", TodayDate);
+
+  //     return (
+  //       matchesSearchText && matchesOrderType && matchesService && matchesToday
+  //     );
+  //   });
+
+  //   setFilteredData(filtered);
+  // };
+
   const handleSearch = () => {
-    const today = new Date(); // Get current date in YYYY-MM-DD format
+    const today = new Date(); // Get current date
 
     const filtered = formData.filter((item) => {
       const matchesSearchText =
@@ -196,16 +240,24 @@ const SearchRecord = () => {
           ? item.selectedLocation === "serviceCenter"
           : false;
 
-      // Safely check if today's filter is enabled and date matches
-      const orderDate = moment(item.date).format("DD-MMM-YYYY");
-      const TodayDate = moment(today).format("DD-MMM-YYYY");
+      const collectedDate = moment(item.currentDate).format("DD-MMM-YYYY");
+      const todayDate = moment(today).format("DD-MMM-YYYY");
+
+      const matchesDate = date
+        ? moment(date).format("DD-MMM-YYYY") === collectedDate // If selected date matches the collected date
+        : true;
+
       const matchesToday =
-        isTodayFilter === true ? orderDate === TodayDate : true; // If 'Today' filter is active, check if date matches
-      console.log("orderDate", orderDate);
-      console.log("today", TodayDate);
+        isTodayFilter === true ? collectedDate === todayDate : true;
+
+      // Apply date filter if a selected date is different from today, otherwise use the today filter
+      const dateFilter =
+        date && moment(date).format("DD-MMM-YYYY") !== todayDate
+          ? matchesDate
+          : matchesToday;
 
       return (
-        matchesSearchText && matchesOrderType && matchesService && matchesToday
+        matchesSearchText && matchesOrderType && matchesService && dateFilter
       );
     });
 
@@ -214,7 +266,10 @@ const SearchRecord = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [orderType, isService, isTodayFilter]);
+  }, [orderType, isService, isTodayFilter, date, searchText]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [orderType, isService, isTodayFilter]);
 
   // Function to get styles for different order statuses
   const getOrderStatusStyle = (status) => {
@@ -409,6 +464,14 @@ const SearchRecord = () => {
     setFilteredData(filtered);
   }, [value]);
 
+  // Input date
+
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || new Date();
+    setShowDatePicker(false);
+    setDate(currentDate);
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
@@ -482,7 +545,7 @@ const SearchRecord = () => {
             setValue={handleOperatorChange}
             setItems={setItems}
             placeholder="Select Operator"
-            style={[styles.picker, { minHeight: 40, width: 290 }]}
+            style={[styles.picker, { minHeight: 40, width: '78%' }]}
             dropDownContainerStyle={styles.dropdownContainer}
           />
         </View>
@@ -490,12 +553,41 @@ const SearchRecord = () => {
         <TouchableOpacity
           style={[
             styles.searchButton,
-            { width: 65, height: 40, alignItems: "center" },
+            { width: 65, height: 40, alignItems: "center" ,marginLeft:-55},
           ]}
           onPress={() => setOpenService(true)}
         >
           <Text style={[styles.buttonText, { fontSize: 15 }]}>List</Text>
         </TouchableOpacity>
+
+        <View>
+          <Button
+            style={{
+              backgroundColor: "#DE3163",
+              width: 50,
+              height: 40,
+              borderRadius: 5,
+              marginLeft: 5,
+            }}
+            textColor="black"
+            onPress={() => setShowDatePicker(true)} // Show the date picker
+          >
+            {moment(date).isSame(new Date(), "day") ? (
+              <Feather name="calendar" size={20} color="#fff" />
+            ) : (
+              <Text style={{ color: "#fff" }}>{moment(date).format("DD")}</Text>
+            )}
+          </Button>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+            />
+          )}
+        </View>
       </View>
 
       {/* Filters */}
