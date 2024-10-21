@@ -157,6 +157,9 @@ import ServiceOperator from "../components/ServiceOperator";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Feather from "@expo/vector-icons/Feather";
+import XLSX from "xlsx";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 
 const SearchRecord = () => {
   const router = useRouter();
@@ -418,6 +421,8 @@ const SearchRecord = () => {
   const [value, setValue] = useState("all");
   const [items, setItems] = useState([]);
   const [openService, setOpenService] = useState(false);
+  // excel download
+  const [excelData, setExcelData] = useState([]);
   // const [filteredData, setFilteredData] = useState(formData || []);
   const getData = async () => {
     try {
@@ -472,6 +477,74 @@ const SearchRecord = () => {
     setDate(currentDate);
   };
 
+  useEffect(() => {
+    const fetchCustomerDetails = async () => {
+      try {
+        const data = await AsyncStorage.getItem("customerDetails");
+        if (data) {
+          const customerData = JSON.parse(data);
+          setExcelData(customerData);
+        } else {
+          setExcelData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching customer data", error);
+      }
+    };
+
+    fetchCustomerDetails();
+  }, []);
+
+  const handleExport = async () => {
+    try {
+      // Check if the data array is not empty
+      if (!excelData || excelData.length === 0) {
+        alert("No data available to export.");
+        return;
+      }
+
+      // Create a worksheet from the data
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Create a new workbook and append the worksheet
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Data");
+
+      // Convert the workbook to a binary string in base64
+      const binaryExcel = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "base64", // Using base64 format directly
+      });
+
+      // Create the file path to save the file
+      const fileUri = `${FileSystem.documentDirectory}customer_data.xlsx`;
+
+      // Write the Excel file as a base64 string
+      await FileSystem.writeAsStringAsync(fileUri, binaryExcel, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Check if sharing is available and share the file
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        alert(`File saved to ${fileUri}`);
+      }
+    } catch (error) {
+      console.error("Error exporting data:", error);
+    }
+  };
+
+  const handleDownload = () => {
+    if (excelData && excelData.length > 0) {
+      // If data is present, call handleExport
+      handleExport();
+    } else {
+      // If no data is available, show an alert
+      alert("Please add customer data before exporting.");
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       {/* Header */}
@@ -502,6 +575,7 @@ const SearchRecord = () => {
             padding: 5,
             borderRadius: 10,
           }}
+          onPress={handleDownload}
         >
           <AntDesign name="arrowdown" size={24} color="#000" />
         </TouchableOpacity>
@@ -545,7 +619,7 @@ const SearchRecord = () => {
             setValue={handleOperatorChange}
             setItems={setItems}
             placeholder="Select Operator"
-            style={[styles.picker, { minHeight: 40, width: '78%' }]}
+            style={[styles.picker, { minHeight: 40, width: "78%" }]}
             dropDownContainerStyle={styles.dropdownContainer}
           />
         </View>
@@ -553,7 +627,7 @@ const SearchRecord = () => {
         <TouchableOpacity
           style={[
             styles.searchButton,
-            { width: 65, height: 40, alignItems: "center" ,marginLeft:-55},
+            { width: 65, height: 40, alignItems: "center", marginLeft: -55 },
           ]}
           onPress={() => setOpenService(true)}
         >
