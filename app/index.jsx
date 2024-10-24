@@ -805,7 +805,11 @@ const SearchRecord = () => {
                       {item?.customerDetails?.customerList?.length > 0 && (
                         <View style={styles.titleValueContainer}>
                           <Text style={styles.titleText}>Customer Name:</Text>
-                          <Text style={styles.valueText}>
+                          <Text
+                            style={styles.valueText}
+                            numberOfLines={1} // Limit the text to one line
+                            ellipsizeMode="tail" // Add an ellipsis at the end if the text is too long
+                          >
                             {item.customerDetails.customerList[0].name}
                           </Text>
                         </View>
@@ -1038,6 +1042,8 @@ const styles = StyleSheet.create({
   valueText: {
     fontFamily: "outfit-regular",
     fontSize: 16,
+    maxWidth: 200, // Set a maximum width to control the text area
+    flexShrink: 1, // Allow the text to shrink to fit the available space
   },
   floatingButton: {
     position: "absolute",
