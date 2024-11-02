@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.nihal30.emreparings"
+      "package": "com.knihal0920.emreparings"
     },
     "web": {
       "bundler": "metro",
@@ -36,7 +36,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "75d5c903-d021-4972-acee-539e8de47194"
+        "projectId": "9fff27df-6112-46fa-8934-ff163c7fd36b"
       }
     },
     "build": {
